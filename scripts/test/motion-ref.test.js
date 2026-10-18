@@ -188,6 +188,8 @@ test('tiltHold and tiltSpinHold effects exist and function properly', () => {
 
   const tiltSpinHoldSub = fx.get('hold', 'tiltSpinHoldSubstring');
   assert.ok(tiltSpinHoldSub, 'tiltSpinHoldSubstring registered');
+});
+
 test('bulletHoles and particlesOnText enter and exit effects exist and function properly', () => {
   const bulletEnter = fx.get('enter', 'bulletHoles');
   assert.ok(bulletEnter, 'bulletHoles enter effect registered');
@@ -255,6 +257,89 @@ test('checkerboard enter and exit effects exist and function properly', () => {
   assert.ok(lateOut.scaleX < 1 && lateOut.scaleY < 1, 'checkerboard exit shrinks letters mid-wipe');
 });
 
+test('fontMirror enter, exit, and hold effects exist and function properly in all 4 directions', () => {
+  const fmEnter = fx.get('enter', 'fontMirror');
+  assert.ok(fmEnter, 'fontMirror enter effect registered');
+
+  // Test down direction enter
+  const stateInDown = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmEnter.cpu(stateInDown, 0.0, { dir: 'down', distance: 0.25, fade: true }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateInDown.scaleY, -1, 'fontMirror enter down starts with inverted scaleY at p=0');
+  assert.equal(stateInDown.y, 250, 'fontMirror enter down starts with +y offset at p=0');
+  assert.equal(stateInDown.opacity, 0, 'fontMirror enter starts faded at p=0');
+
+  const stateInDown1 = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmEnter.cpu(stateInDown1, 1.0, { dir: 'down', distance: 0.25, fade: true }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateInDown1.scaleY, 1, 'fontMirror enter down ends with normal scaleY at p=1');
+  assert.equal(stateInDown1.y, 0, 'fontMirror enter down ends with 0 y offset at p=1');
+  assert.equal(stateInDown1.opacity, 1, 'fontMirror enter ends fully opaque at p=1');
+
+  // Test up, left, right directions enter
+  const stateInUp = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmEnter.cpu(stateInUp, 0.0, { dir: 'up', distance: 0.2, fade: false }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateInUp.scaleY, -1);
+  assert.equal(stateInUp.y, -200);
+
+  const stateInLeft = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmEnter.cpu(stateInLeft, 0.0, { dir: 'left', distance: 0.2, fade: false }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateInLeft.scaleX, -1);
+  assert.equal(stateInLeft.x, -200);
+
+  const stateInRight = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmEnter.cpu(stateInRight, 0.0, { dir: 'right', distance: 0.2, fade: false }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateInRight.scaleX, -1);
+  assert.equal(stateInRight.x, 200);
+
+  // Test exit
+  const fmExit = fx.get('exit', 'fontMirror');
+  assert.ok(fmExit, 'fontMirror exit effect registered');
+
+  const stateOutDown0 = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmExit.cpu(stateOutDown0, 0.0, { dir: 'down', distance: 0.25, fade: true }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOutDown0.scaleY, 1, 'fontMirror exit starts normal at p=0');
+  assert.equal(stateOutDown0.y, 0, 'fontMirror exit starts at 0 offset at p=0');
+  assert.equal(stateOutDown0.opacity, 1, 'fontMirror exit starts fully opaque');
+
+  const stateOutDown1 = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmExit.cpu(stateOutDown1, 1.0, { dir: 'down', distance: 0.25, fade: true }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOutDown1.scaleY, -1, 'fontMirror exit ends with inverted scaleY at p=1');
+  assert.equal(stateOutDown1.y, 250, 'fontMirror exit ends with +y offset at p=1');
+  assert.equal(stateOutDown1.opacity, 0, 'fontMirror exit ends faded at p=1');
+
+  const stateOutUp = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmExit.cpu(stateOutUp, 1.0, { dir: 'up', distance: 0.2 }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOutUp.scaleY, -1);
+  assert.equal(stateOutUp.y, -200);
+
+  const stateOutLeft = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmExit.cpu(stateOutLeft, 1.0, { dir: 'left', distance: 0.2 }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOutLeft.scaleX, -1);
+  assert.equal(stateOutLeft.x, -200);
+
+  const stateOutRight = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+  fmExit.cpu(stateOutRight, 1.0, { dir: 'right', distance: 0.2 }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOutRight.scaleX, -1);
+  assert.equal(stateOutRight.x, 200);
+
+  // Test hold
+  const fmHold = fx.get('hold', 'fontMirror');
+  assert.ok(fmHold, 'fontMirror hold effect registered');
+
+  const stateHoldFlip = { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+  fmHold.cpu(stateHoldFlip, 0.5, 1.0, { dir: 'down', mode: 'flip', amount: 0.2, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.notEqual(stateHoldFlip.scaleY, 1, 'fontMirror hold flip modifies scaleY');
+
+  const stateHoldReflect = { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+  fmHold.cpu(stateHoldReflect, 0.25, 1.0, { dir: 'right', mode: 'reflection', amount: 0.3, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.ok(stateHoldReflect.scaleX < 1, 'fontMirror hold reflection reduces scaleX');
+  assert.ok(stateHoldReflect.x > 0, 'fontMirror hold reflection shifts x right');
+
+  const stateHoldBounce = { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+  fmHold.cpu(stateHoldBounce, 0.25, 1.0, { dir: 'up', mode: 'bounce', amount: 0.2, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.ok(stateHoldBounce.scaleY < 1, 'fontMirror hold bounce modifies scaleY');
+  assert.ok(stateHoldBounce.y < 0, 'fontMirror hold bounce shifts y up');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
@@ -271,6 +356,9 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('bulletHolesIn'), 'bulletHolesIn preset');
   assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
   assert.ok(ids.has('checkerboardIn'), 'checkerboardIn preset');
+  assert.ok(ids.has('fontMirrorIn'), 'fontMirrorIn preset');
+  assert.ok(ids.has('fontMirrorHold'), 'fontMirrorHold preset');
+  assert.ok(ids.has('fontMirrorOut'), 'fontMirrorOut preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
   assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');

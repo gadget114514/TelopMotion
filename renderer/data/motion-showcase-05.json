@@ -43,11 +43,41 @@
         "id": "mo05_01",
         "start": 0,
         "end": 3,
-        "text": "113. オーバーシュート (Overshoot) · jelly [amount:0.18 freq:1.5]\nあいうえお Aiueo 0123",
+        "text": "113. フォロースルー (Follow-Through) · drift [vx:0.08]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 113,
+          "presetId": "te_290",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "drift"
+        }
+      },
+      {
+        "id": "mo05_02",
+        "start": 3,
+        "end": 6,
+        "text": "114. オーバーラップ (Overlapping Action) · sineWave\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "05",
+          "index": 114,
+          "presetId": "te_291",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "sineWave"
+        }
+      },
+      {
+        "id": "mo05_03",
+        "start": 6,
+        "end": 9,
+        "text": "115. オーバーシュート (Overshoot) · jelly [amount:0.18 freq:1.5]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "05",
+          "index": 115,
           "presetId": "te_8",
           "group": "emphasis",
           "phase": "hold",
@@ -55,45 +85,15 @@
         }
       },
       {
-        "id": "mo05_02",
-        "start": 3,
-        "end": 6,
-        "text": "114. カラオケ塗り (Karaoke Fill) · pulse\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "05",
-          "index": 114,
-          "presetId": "te_234",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "pulse"
-        }
-      },
-      {
-        "id": "mo05_03",
-        "start": 6,
-        "end": 9,
-        "text": "115. カラオケワイプ (Karaoke Wipe) · pulse [bpm:140]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "05",
-          "index": 115,
-          "presetId": "te_235",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "pulse"
-        }
-      },
-      {
         "id": "mo05_04",
         "start": 9,
         "end": 12,
-        "text": "116. カラオケバウンス (Karaoke Bounce) · pulse [amount:0.12 bpm:160]\nあいうえお Aiueo 0123",
+        "text": "116. カラオケ塗り (Karaoke Fill) · pulse\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 116,
-          "presetId": "te_236",
+          "presetId": "te_234",
           "group": "emphasis",
           "phase": "hold",
           "type": "pulse"
@@ -103,11 +103,41 @@
         "id": "mo05_05",
         "start": 12,
         "end": 15,
-        "text": "117. カラオケハイライト (Karaoke Highlight) · opacityPulse [min:0.4 period:1.2]\nあいうえお Aiueo 0123",
+        "text": "117. カラオケワイプ (Karaoke Wipe) · pulse [bpm:140]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 117,
+          "presetId": "te_235",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "pulse"
+        }
+      },
+      {
+        "id": "mo05_06",
+        "start": 15,
+        "end": 18,
+        "text": "118. カラオケバウンス (Karaoke Bounce) · pulse [amount:0.12 bpm:160]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "05",
+          "index": 118,
+          "presetId": "te_236",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "pulse"
+        }
+      },
+      {
+        "id": "mo05_07",
+        "start": 18,
+        "end": 21,
+        "text": "119. カラオケハイライト (Karaoke Highlight) · opacityPulse [min:0.4 period:1.2]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "05",
+          "index": 119,
           "presetId": "te_237",
           "group": "emphasis",
           "phase": "hold",
@@ -115,14 +145,14 @@
         }
       },
       {
-        "id": "mo05_06",
-        "start": 15,
-        "end": 18,
-        "text": "118. バウンシングボール (Bouncing Ball) · jelly [amount:0.18]\nあいうえお Aiueo 0123",
+        "id": "mo05_08",
+        "start": 21,
+        "end": 24,
+        "text": "120. バウンシングボール (Bouncing Ball) · jelly [amount:0.18]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 118,
+          "index": 120,
           "presetId": "te_238",
           "group": "emphasis",
           "phase": "hold",
@@ -130,14 +160,14 @@
         }
       },
       {
-        "id": "mo05_07",
-        "start": 18,
-        "end": 21,
-        "text": "119. 行ごとカラオケ (Line-by-Line Karaoke) · pulse [amount:0.05 bpm:100]\nあいうえお Aiueo 0123",
+        "id": "mo05_09",
+        "start": 24,
+        "end": 27,
+        "text": "121. 行ごとカラオケ (Line-by-Line Karaoke) · pulse [amount:0.05 bpm:100]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 119,
+          "index": 121,
           "presetId": "te_239",
           "group": "emphasis",
           "phase": "hold",
@@ -145,14 +175,14 @@
         }
       },
       {
-        "id": "mo05_08",
-        "start": 21,
-        "end": 24,
-        "text": "120. ルビ演出 (Ruby Text Reveal) · breathing\nあいうえお Aiueo 0123",
+        "id": "mo05_10",
+        "start": 27,
+        "end": 30,
+        "text": "122. ルビ演出 (Ruby Text Reveal) · breathing\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 120,
+          "index": 122,
           "presetId": "te_240",
           "group": "emphasis",
           "phase": "hold",
@@ -160,14 +190,14 @@
         }
       },
       {
-        "id": "mo05_09",
-        "start": 24,
-        "end": 27,
-        "text": "121. ワードハイライト (Word Highlight) · opacityPulse [period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "id": "mo05_11",
+        "start": 30,
+        "end": 33,
+        "text": "123. ワードハイライト (Word Highlight) · opacityPulse [period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 121,
+          "index": 123,
           "presetId": "te_241",
           "group": "emphasis",
           "phase": "hold",
@@ -175,14 +205,14 @@
         }
       },
       {
-        "id": "mo05_10",
-        "start": 27,
-        "end": 30,
-        "text": "122. VHS風 (VHS Tape) · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
+        "id": "mo05_12",
+        "start": 33,
+        "end": 36,
+        "text": "124. VHS風 (VHS Tape) · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 122,
+          "index": 124,
           "presetId": "te_189",
           "group": "emphasis",
           "phase": "hold",
@@ -190,45 +220,15 @@
         }
       },
       {
-        "id": "mo05_11",
-        "start": 30,
-        "end": 33,
-        "text": "123. グリッチ (Digital Glitch) · jitter [amp:0.02 rate:10]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "05",
-          "index": 123,
-          "presetId": "te_190",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "jitter"
-        }
-      },
-      {
-        "id": "mo05_12",
-        "start": 33,
-        "end": 36,
-        "text": "124. RGBずれ (RGB Split / Chromatic Displacement) · jitter [amp:0.006 rate:30]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "05",
-          "index": 124,
-          "presetId": "te_191",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "jitter"
-        }
-      },
-      {
         "id": "mo05_13",
         "start": 36,
         "end": 39,
-        "text": "125. 色収差 (Chromatic Aberration) · jitter [amp:0.004 rate:26]\nあいうえお Aiueo 0123",
+        "text": "125. グリッチ (Digital Glitch) · jitter [amp:0.02 rate:10]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 125,
-          "presetId": "te_192",
+          "presetId": "te_190",
           "group": "emphasis",
           "phase": "hold",
           "type": "jitter"
@@ -238,12 +238,12 @@
         "id": "mo05_14",
         "start": 39,
         "end": 42,
-        "text": "126. スライスグリッチ (Slice Glitch) · jitter [amp:0.025 rate:6]\nあいうえお Aiueo 0123",
+        "text": "126. RGBずれ (RGB Split / Chromatic Displacement) · jitter [amp:0.006 rate:30]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 126,
-          "presetId": "te_193",
+          "presetId": "te_191",
           "group": "emphasis",
           "phase": "hold",
           "type": "jitter"
@@ -253,27 +253,27 @@
         "id": "mo05_15",
         "start": 42,
         "end": 45,
-        "text": "127. ブロックノイズ (Block Noise) · shiver [amount:0.9 interval:1.5]\nあいうえお Aiueo 0123",
+        "text": "127. 色収差 (Chromatic Aberration) · jitter [amp:0.004 rate:26]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 127,
-          "presetId": "te_194",
+          "presetId": "te_192",
           "group": "emphasis",
           "phase": "hold",
-          "type": "shiver"
+          "type": "jitter"
         }
       },
       {
         "id": "mo05_16",
         "start": 45,
         "end": 48,
-        "text": "128. ノイズ (Film Noise) · jitter [amp:0.015 rate:18]\nあいうえお Aiueo 0123",
+        "text": "128. スライスグリッチ (Slice Glitch) · jitter [amp:0.025 rate:6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 128,
-          "presetId": "te_195",
+          "presetId": "te_193",
           "group": "emphasis",
           "phase": "hold",
           "type": "jitter"
@@ -283,42 +283,42 @@
         "id": "mo05_17",
         "start": 48,
         "end": 51,
-        "text": "129. 砂嵐 (TV Static) · jitter [amp:0.03 rate:8]\nあいうえお Aiueo 0123",
+        "text": "129. ブロックノイズ (Block Noise) · shiver [amount:0.9 interval:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 129,
-          "presetId": "te_196",
+          "presetId": "te_194",
           "group": "emphasis",
           "phase": "hold",
-          "type": "jitter"
+          "type": "shiver"
         }
       },
       {
         "id": "mo05_18",
         "start": 51,
         "end": 54,
-        "text": "130. データモッシュ (Datamosh) · wobbleWarp [amount:0.15 speed:1]\nあいうえお Aiueo 0123",
+        "text": "130. ノイズ (Film Noise) · jitter [amp:0.015 rate:18]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 130,
-          "presetId": "te_197",
+          "presetId": "te_195",
           "group": "emphasis",
           "phase": "hold",
-          "type": "wobbleWarp"
+          "type": "jitter"
         }
       },
       {
         "id": "mo05_19",
         "start": 54,
         "end": 57,
-        "text": "131. ジッター (Jitter) · jitter [amp:0.01]\nあいうえお Aiueo 0123",
+        "text": "131. 砂嵐 (TV Static) · jitter [amp:0.03 rate:8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 131,
-          "presetId": "te_198",
+          "presetId": "te_196",
           "group": "emphasis",
           "phase": "hold",
           "type": "jitter"
@@ -328,11 +328,41 @@
         "id": "mo05_20",
         "start": 57,
         "end": 60,
-        "text": "132. パーティクル (Particles) · drift [vy:-0.05]\nあいうえお Aiueo 0123",
+        "text": "132. データモッシュ (Datamosh) · wobbleWarp [amount:0.15 speed:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 132,
+          "presetId": "te_197",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "wobbleWarp"
+        }
+      },
+      {
+        "id": "mo05_21",
+        "start": 60,
+        "end": 63,
+        "text": "133. ジッター (Jitter) · jitter [amp:0.01]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "05",
+          "index": 133,
+          "presetId": "te_198",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "jitter"
+        }
+      },
+      {
+        "id": "mo05_22",
+        "start": 63,
+        "end": 66,
+        "text": "134. パーティクル (Particles) · drift [vy:-0.05]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "05",
+          "index": 134,
           "presetId": "te_165",
           "group": "emphasis",
           "phase": "hold",
@@ -340,14 +370,14 @@
         }
       },
       {
-        "id": "mo05_21",
-        "start": 60,
-        "end": 63,
-        "text": "133. パーティクルバースト (Particle Burst) · shiver [amount:1 interval:1.2]\nあいうえお Aiueo 0123",
+        "id": "mo05_23",
+        "start": 66,
+        "end": 69,
+        "text": "135. パーティクルバースト (Particle Burst) · shiver [amount:1 interval:1.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 133,
+          "index": 135,
           "presetId": "te_166",
           "group": "emphasis",
           "phase": "hold",
@@ -355,14 +385,14 @@
         }
       },
       {
-        "id": "mo05_22",
-        "start": 63,
-        "end": 66,
-        "text": "134. パーティクル集合 (Particle Assembly) · pulse [amount:0.12 bpm:90]\nあいうえお Aiueo 0123",
+        "id": "mo05_24",
+        "start": 69,
+        "end": 72,
+        "text": "136. パーティクル集合 (Particle Assembly) · pulse [amount:0.12 bpm:90]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
-          "index": 134,
+          "index": 136,
           "presetId": "te_167",
           "group": "emphasis",
           "phase": "hold",
@@ -370,45 +400,15 @@
         }
       },
       {
-        "id": "mo05_23",
-        "start": 66,
-        "end": 69,
-        "text": "135. ダストアウト (Dust Out) · dissolve [speed:1.2 intensity:0.35]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "05",
-          "index": 135,
-          "presetId": "te_168",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "dissolve"
-        }
-      },
-      {
-        "id": "mo05_24",
-        "start": 69,
-        "end": 72,
-        "text": "136. サノス消滅 (Thanos Disintegration) · dissolve [speed:1.8 intensity:0.5]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "05",
-          "index": 136,
-          "presetId": "te_169",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "dissolve"
-        }
-      },
-      {
         "id": "mo05_25",
         "start": 72,
         "end": 75,
-        "text": "137. ディスインテグレート (Disintegrate) · dissolve [intensity:0.45]\nあいうえお Aiueo 0123",
+        "text": "137. ダストアウト (Dust Out) · dissolve [speed:1.2 intensity:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 137,
-          "presetId": "te_170",
+          "presetId": "te_168",
           "group": "emphasis",
           "phase": "hold",
           "type": "dissolve"
@@ -418,45 +418,45 @@
         "id": "mo05_26",
         "start": 75,
         "end": 78,
-        "text": "138. 紙吹雪 (Confetti) · drift [vx:0.06 vy:0.12]\nあいうえお Aiueo 0123",
+        "text": "138. サノス消滅 (Thanos Disintegration) · dissolve [speed:1.8 intensity:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 138,
-          "presetId": "te_176",
+          "presetId": "te_169",
           "group": "emphasis",
           "phase": "hold",
-          "type": "drift"
+          "type": "dissolve"
         }
       },
       {
         "id": "mo05_27",
         "start": 78,
         "end": 81,
-        "text": "139. 雪 (Snowfall) · drift [vx:0.02 vy:0.08]\nあいうえお Aiueo 0123",
+        "text": "139. ディスインテグレート (Disintegrate) · dissolve [intensity:0.45]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 139,
-          "presetId": "te_177",
+          "presetId": "te_170",
           "group": "emphasis",
           "phase": "hold",
-          "type": "drift"
+          "type": "dissolve"
         }
       },
       {
         "id": "mo05_28",
         "start": 81,
         "end": 84,
-        "text": "140. テキストマスク (Text Mask) · marquee [speed:0.15]\nあいうえお Aiueo 0123",
+        "text": "140. 紙吹雪 (Confetti) · drift [vx:0.06 vy:0.12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "05",
           "index": 140,
-          "presetId": "te_261",
+          "presetId": "te_176",
           "group": "emphasis",
           "phase": "hold",
-          "type": "marquee"
+          "type": "drift"
         }
       }
     ],
@@ -514,14 +514,14 @@
         {
           "id": "m_mo05_01",
           "phase": "hold",
-          "type": "jelly",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "amount": 0.18,
-            "freq": 1.5
+            "vx": 0.08,
+            "vy": 0
           },
           "enabled": true
         }
@@ -559,15 +559,15 @@
         {
           "id": "m_mo05_02",
           "phase": "hold",
-          "type": "pulse",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "bpm": 120,
-            "axis": "both"
+            "amp": 0.03,
+            "freq": 0.004,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -605,15 +605,14 @@
         {
           "id": "m_mo05_03",
           "phase": "hold",
-          "type": "pulse",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "bpm": 140,
-            "axis": "both"
+            "amount": 0.18,
+            "freq": 1.5
           },
           "enabled": true
         }
@@ -657,8 +656,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.12,
-            "bpm": 160,
+            "amount": 0.06,
+            "bpm": 120,
             "axis": "both"
           },
           "enabled": true
@@ -697,15 +696,15 @@
         {
           "id": "m_mo05_05",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "pulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.4,
-            "period": 1.2,
-            "speed": 0.8
+            "amount": 0.06,
+            "bpm": 140,
+            "axis": "both"
           },
           "enabled": true
         }
@@ -743,14 +742,15 @@
         {
           "id": "m_mo05_06",
           "phase": "hold",
-          "type": "jelly",
+          "type": "pulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.18,
-            "freq": 2
+            "amount": 0.12,
+            "bpm": 160,
+            "axis": "both"
           },
           "enabled": true
         }
@@ -788,15 +788,15 @@
         {
           "id": "m_mo05_07",
           "phase": "hold",
-          "type": "pulse",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.05,
-            "bpm": 100,
-            "axis": "both"
+            "min": 0.4,
+            "period": 1.2,
+            "speed": 0.8
           },
           "enabled": true
         }
@@ -834,13 +834,14 @@
         {
           "id": "m_mo05_08",
           "phase": "hold",
-          "type": "breathing",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.03
+            "amount": 0.18,
+            "freq": 2
           },
           "enabled": true
         }
@@ -878,15 +879,15 @@
         {
           "id": "m_mo05_09",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "pulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.35,
-            "period": 1,
-            "speed": 0.9
+            "amount": 0.05,
+            "bpm": 100,
+            "axis": "both"
           },
           "enabled": true
         }
@@ -924,14 +925,13 @@
         {
           "id": "m_mo05_10",
           "phase": "hold",
-          "type": "shiver",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.7,
-            "interval": 2.5
+            "amount": 0.03
           },
           "enabled": true
         }
@@ -969,14 +969,15 @@
         {
           "id": "m_mo05_11",
           "phase": "hold",
-          "type": "jitter",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "rate": 10
+            "min": 0.35,
+            "period": 1,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -1014,14 +1015,14 @@
         {
           "id": "m_mo05_12",
           "phase": "hold",
-          "type": "jitter",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.006,
-            "rate": 30
+            "amount": 0.7,
+            "interval": 2.5
           },
           "enabled": true
         }
@@ -1065,8 +1066,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.004,
-            "rate": 26
+            "amp": 0.02,
+            "rate": 10
           },
           "enabled": true
         }
@@ -1110,8 +1111,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.025,
-            "rate": 6
+            "amp": 0.006,
+            "rate": 30
           },
           "enabled": true
         }
@@ -1149,14 +1150,14 @@
         {
           "id": "m_mo05_15",
           "phase": "hold",
-          "type": "shiver",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.9,
-            "interval": 1.5
+            "amp": 0.004,
+            "rate": 26
           },
           "enabled": true
         }
@@ -1200,8 +1201,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.015,
-            "rate": 18
+            "amp": 0.025,
+            "rate": 6
           },
           "enabled": true
         }
@@ -1239,14 +1240,14 @@
         {
           "id": "m_mo05_17",
           "phase": "hold",
-          "type": "jitter",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.03,
-            "rate": 8
+            "amount": 0.9,
+            "interval": 1.5
           },
           "enabled": true
         }
@@ -1284,15 +1285,14 @@
         {
           "id": "m_mo05_18",
           "phase": "hold",
-          "type": "wobbleWarp",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.15,
-            "scale": 2,
-            "speed": 1
+            "amp": 0.015,
+            "rate": 18
           },
           "enabled": true
         }
@@ -1336,8 +1336,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.01,
-            "rate": 12
+            "amp": 0.03,
+            "rate": 8
           },
           "enabled": true
         }
@@ -1375,14 +1375,15 @@
         {
           "id": "m_mo05_20",
           "phase": "hold",
-          "type": "drift",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.05,
-            "vy": -0.05
+            "amount": 0.15,
+            "scale": 2,
+            "speed": 1
           },
           "enabled": true
         }
@@ -1420,14 +1421,14 @@
         {
           "id": "m_mo05_21",
           "phase": "hold",
-          "type": "shiver",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 1,
-            "interval": 1.2
+            "amp": 0.01,
+            "rate": 12
           },
           "enabled": true
         }
@@ -1465,15 +1466,14 @@
         {
           "id": "m_mo05_22",
           "phase": "hold",
-          "type": "pulse",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "amount": 0.12,
-            "bpm": 90,
-            "axis": "both"
+            "vx": 0.05,
+            "vy": -0.05
           },
           "enabled": true
         }
@@ -1511,14 +1511,14 @@
         {
           "id": "m_mo05_23",
           "phase": "hold",
-          "type": "dissolve",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 1.2,
-            "intensity": 0.35
+            "amount": 1,
+            "interval": 1.2
           },
           "enabled": true
         }
@@ -1556,14 +1556,15 @@
         {
           "id": "m_mo05_24",
           "phase": "hold",
-          "type": "dissolve",
+          "type": "pulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 1.8,
-            "intensity": 0.5
+            "amount": 0.12,
+            "bpm": 90,
+            "axis": "both"
           },
           "enabled": true
         }
@@ -1607,8 +1608,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 1.5,
-            "intensity": 0.45
+            "speed": 1.2,
+            "intensity": 0.35
           },
           "enabled": true
         }
@@ -1646,14 +1647,14 @@
         {
           "id": "m_mo05_26",
           "phase": "hold",
-          "type": "drift",
+          "type": "dissolve",
           "from": "start",
           "delay": 0,
-          "duration": 1.8,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.06,
-            "vy": 0.12
+            "speed": 1.8,
+            "intensity": 0.5
           },
           "enabled": true
         }
@@ -1691,14 +1692,14 @@
         {
           "id": "m_mo05_27",
           "phase": "hold",
-          "type": "drift",
+          "type": "dissolve",
           "from": "start",
           "delay": 0,
-          "duration": 1.8,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.02,
-            "vy": 0.08
+            "speed": 1.5,
+            "intensity": 0.45
           },
           "enabled": true
         }
@@ -1736,13 +1737,14 @@
         {
           "id": "m_mo05_28",
           "phase": "hold",
-          "type": "marquee",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 2,
+          "duration": 1.8,
           "ease": "linear",
           "params": {
-            "speed": 0.15
+            "vx": 0.06,
+            "vy": 0.12
           },
           "enabled": true
         }
@@ -1822,32 +1824,18 @@
   "beats": {
     "mo05_01": [
       {
-        "id": "mo05_01:page1",
+        "id": "mo05_01:single0",
         "cueId": "mo05_01",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 0,
-        "end": 1.1452404317958784,
-        "text": "113. オーバーシュート (Overshoot)",
-        "lines": [
-          "113. オーバーシュート (Overshoot)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_01:page2",
-        "cueId": "mo05_01",
-        "kind": "page",
-        "index": 2,
-        "start": 1.1452404317958784,
         "end": 3,
-        "text": " · jelly [amount:0.18 freq:1.5]\nあいうえお Aiueo 0123",
+        "text": "113. フォロースルー (Follow-Through) ·\ndrift [vx:0.08]あいうえお Aiueo 0123",
         "lines": [
-          " · jelly [amount:0.18 freq:1.5]",
-          "あいうえお Aiueo 0123"
+          "113. フォロースルー (Follow-Through) ·",
+          "drift [vx:0.08]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
@@ -1859,108 +1847,108 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "114. カラオケ塗り (Karaoke Fill)\n · pulseあいうえお Aiueo 0123",
+        "text": "114. オーバーラップ (Overlapping Action\n) · sineWaveあいうえお Aiueo 0123",
         "lines": [
-          "114. カラオケ塗り (Karaoke Fill)",
+          "114. オーバーラップ (Overlapping Action",
+          ") · sineWaveあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8599999999999999,
+        "pinned": false
+      }
+    ],
+    "mo05_03": [
+      {
+        "id": "mo05_03:page1",
+        "cueId": "mo05_03",
+        "kind": "page",
+        "index": 1,
+        "start": 6,
+        "end": 7.145240431795878,
+        "text": "115. オーバーシュート (Overshoot)",
+        "lines": [
+          "115. オーバーシュート (Overshoot)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_03:page2",
+        "cueId": "mo05_03",
+        "kind": "page",
+        "index": 2,
+        "start": 7.145240431795878,
+        "end": 9,
+        "text": " · jelly [amount:0.18 freq:1.5]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · jelly [amount:0.18 freq:1.5]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo05_04": [
+      {
+        "id": "mo05_04:single0",
+        "cueId": "mo05_04",
+        "kind": "single",
+        "index": 0,
+        "start": 9,
+        "end": 12,
+        "text": "116. カラオケ塗り (Karaoke Fill)\n · pulseあいうえお Aiueo 0123",
+        "lines": [
+          "116. カラオケ塗り (Karaoke Fill)",
           " · pulseあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
       }
     ],
-    "mo05_03": [
+    "mo05_05": [
       {
-        "id": "mo05_03:single0",
-        "cueId": "mo05_03",
+        "id": "mo05_05:single0",
+        "cueId": "mo05_05",
         "kind": "single",
         "index": 0,
-        "start": 6,
-        "end": 9,
-        "text": "115. カラオケワイプ (Karaoke Wipe) ·\npulse [bpm:140]あいうえお Aiueo 0123",
+        "start": 12,
+        "end": 15,
+        "text": "117. カラオケワイプ (Karaoke Wipe) ·\npulse [bpm:140]あいうえお Aiueo 0123",
         "lines": [
-          "115. カラオケワイプ (Karaoke Wipe) ·",
+          "117. カラオケワイプ (Karaoke Wipe) ·",
           "pulse [bpm:140]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
-    "mo05_04": [
+    "mo05_06": [
       {
-        "id": "mo05_04:page1",
-        "cueId": "mo05_04",
+        "id": "mo05_06:page1",
+        "cueId": "mo05_06",
         "kind": "page",
         "index": 1,
-        "start": 9,
-        "end": 10.195323916220165,
-        "text": "116. カラオケバウンス (Karaoke Bounce)",
+        "start": 15,
+        "end": 16.195323916220165,
+        "text": "118. カラオケバウンス (Karaoke Bounce)",
         "lines": [
-          "116. カラオケバウンス (Karaoke Bounce)"
+          "118. カラオケバウンス (Karaoke Bounce)"
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo05_04:page2",
-        "cueId": "mo05_04",
+        "id": "mo05_06:page2",
+        "cueId": "mo05_06",
         "kind": "page",
         "index": 2,
-        "start": 10.195323916220165,
-        "end": 12,
+        "start": 16.195323916220165,
+        "end": 18,
         "text": " · pulse [amount:0.12 bpm:160]\nあいうえお Aiueo 0123",
         "lines": [
           " · pulse [amount:0.12 bpm:160]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo05_05": [
-      {
-        "id": "mo05_05:page1",
-        "cueId": "mo05_05",
-        "kind": "page",
-        "index": 1,
-        "start": 12,
-        "end": 13.18298969072165,
-        "text": "117. カラオケハイライト (Karaoke Highlight",
-        "lines": [
-          "117. カラオケハイライト (Karaoke Highlight"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_05:page2",
-        "cueId": "mo05_05",
-        "kind": "page",
-        "index": 2,
-        "start": 13.18298969072165,
-        "end": 15,
-        "text": ") · opacityPulse [min:0.4 period:1.2]\nあいうえお Aiueo 0123",
-        "lines": [
-          ") · opacityPulse [min:0.4 period:1.2]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo05_06": [
-      {
-        "id": "mo05_06:single0",
-        "cueId": "mo05_06",
-        "kind": "single",
-        "index": 0,
-        "start": 15,
-        "end": 18,
-        "text": "118. バウンシングボール (Bouncing Ball) ·\njelly [amount:0.18]あいうえお Aiueo 0123",
-        "lines": [
-          "118. バウンシングボール (Bouncing Ball) ·",
-          "jelly [amount:0.18]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1971,10 +1959,10 @@
         "kind": "page",
         "index": 1,
         "start": 18,
-        "end": 19.292626728110598,
-        "text": "119. 行ごとカラオケ (Line-by-Line Karaoke)",
+        "end": 19.182989690721648,
+        "text": "119. カラオケハイライト (Karaoke Highlight",
         "lines": [
-          "119. 行ごとカラオケ (Line-by-Line Karaoke)"
+          "119. カラオケハイライト (Karaoke Highlight"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1984,11 +1972,11 @@
         "cueId": "mo05_07",
         "kind": "page",
         "index": 2,
-        "start": 19.292626728110598,
+        "start": 19.182989690721648,
         "end": 21,
-        "text": " · pulse [amount:0.05 bpm:100]\nあいうえお Aiueo 0123",
+        "text": ") · opacityPulse [min:0.4 period:1.2]\nあいうえお Aiueo 0123",
         "lines": [
-          " · pulse [amount:0.05 bpm:100]",
+          ") · opacityPulse [min:0.4 period:1.2]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2003,12 +1991,12 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "120. ルビ演出 (Ruby Text Reveal)\n · breathingあいうえお Aiueo 0123",
+        "text": "120. バウンシングボール (Bouncing Ball) ·\njelly [amount:0.18]あいうえお Aiueo 0123",
         "lines": [
-          "120. ルビ演出 (Ruby Text Reveal)",
-          " · breathingあいうえお Aiueo 0123"
+          "120. バウンシングボール (Bouncing Ball) ·",
+          "jelly [amount:0.18]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2019,10 +2007,10 @@
         "kind": "page",
         "index": 1,
         "start": 24,
-        "end": 25.163941670349093,
-        "text": "121. ワードハイライト (Word Highlight)",
+        "end": 25.292626728110598,
+        "text": "121. 行ごとカラオケ (Line-by-Line Karaoke)",
         "lines": [
-          "121. ワードハイライト (Word Highlight)"
+          "121. 行ごとカラオケ (Line-by-Line Karaoke)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2032,11 +2020,11 @@
         "cueId": "mo05_09",
         "kind": "page",
         "index": 2,
-        "start": 25.163941670349093,
+        "start": 25.292626728110598,
         "end": 27,
-        "text": " · opacityPulse [period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "text": " · pulse [amount:0.05 bpm:100]\nあいうえお Aiueo 0123",
         "lines": [
-          " · opacityPulse [period:1 speed:0.9]",
+          " · pulse [amount:0.05 bpm:100]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2051,92 +2039,77 @@
         "index": 0,
         "start": 27,
         "end": 30,
-        "text": "122. VHS風 (VHS Tape) · shiver [amount:\n0.7 interval:2.5]あいうえお Aiueo 0123",
+        "text": "122. ルビ演出 (Ruby Text Reveal)\n · breathingあいうえお Aiueo 0123",
         "lines": [
-          "122. VHS風 (VHS Tape) · shiver [amount:",
+          "122. ルビ演出 (Ruby Text Reveal)",
+          " · breathingあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo05_11": [
+      {
+        "id": "mo05_11:page1",
+        "cueId": "mo05_11",
+        "kind": "page",
+        "index": 1,
+        "start": 30,
+        "end": 31.163941670349093,
+        "text": "123. ワードハイライト (Word Highlight)",
+        "lines": [
+          "123. ワードハイライト (Word Highlight)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_11:page2",
+        "cueId": "mo05_11",
+        "kind": "page",
+        "index": 2,
+        "start": 31.163941670349093,
+        "end": 33,
+        "text": " · opacityPulse [period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · opacityPulse [period:1 speed:0.9]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo05_12": [
+      {
+        "id": "mo05_12:single0",
+        "cueId": "mo05_12",
+        "kind": "single",
+        "index": 0,
+        "start": 33,
+        "end": 36,
+        "text": "124. VHS風 (VHS Tape) · shiver [amount:\n0.7 interval:2.5]あいうえお Aiueo 0123",
+        "lines": [
+          "124. VHS風 (VHS Tape) · shiver [amount:",
           "0.7 interval:2.5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
-    "mo05_11": [
+    "mo05_13": [
       {
-        "id": "mo05_11:single0",
-        "cueId": "mo05_11",
+        "id": "mo05_13:single0",
+        "cueId": "mo05_13",
         "kind": "single",
         "index": 0,
-        "start": 30,
-        "end": 33,
-        "text": "123. グリッチ (Digital Glitch) · jitter\n[amp:0.02 rate:10]あいうえお Aiueo 0123",
+        "start": 36,
+        "end": 39,
+        "text": "125. グリッチ (Digital Glitch) · jitter\n[amp:0.02 rate:10]あいうえお Aiueo 0123",
         "lines": [
-          "123. グリッチ (Digital Glitch) · jitter",
+          "125. グリッチ (Digital Glitch) · jitter",
           "[amp:0.02 rate:10]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8399999999999999,
-        "pinned": false
-      }
-    ],
-    "mo05_12": [
-      {
-        "id": "mo05_12:page1",
-        "cueId": "mo05_12",
-        "kind": "page",
-        "index": 1,
-        "start": 33,
-        "end": 34.887793783169066,
-        "text": "124. RGBずれ (RGB Split / Chromatic\nDisplacement) · jitter [amp:0.",
-        "lines": [
-          "124. RGBずれ (RGB Split / Chromatic",
-          "Displacement) · jitter [amp:0."
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_12:page2",
-        "cueId": "mo05_12",
-        "kind": "page",
-        "index": 2,
-        "start": 34.887793783169066,
-        "end": 36,
-        "text": "006 rate:30]\nあいうえお Aiueo 0123",
-        "lines": [
-          "006 rate:30]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo05_13": [
-      {
-        "id": "mo05_13:page1",
-        "cueId": "mo05_13",
-        "kind": "page",
-        "index": 1,
-        "start": 36,
-        "end": 37.224938875305625,
-        "text": "125. 色収差 (Chromatic Aberration)",
-        "lines": [
-          "125. 色収差 (Chromatic Aberration)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_13:page2",
-        "cueId": "mo05_13",
-        "kind": "page",
-        "index": 2,
-        "start": 37.224938875305625,
-        "end": 39,
-        "text": " · jitter [amp:0.004 rate:26]\nあいうえお Aiueo 0123",
-        "lines": [
-          " · jitter [amp:0.004 rate:26]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2147,10 +2120,11 @@
         "kind": "page",
         "index": 1,
         "start": 39,
-        "end": 40.18899643402955,
-        "text": "126. スライスグリッチ (Slice Glitch)",
+        "end": 40.887793783169066,
+        "text": "126. RGBずれ (RGB Split / Chromatic\nDisplacement) · jitter [amp:0.",
         "lines": [
-          "126. スライスグリッチ (Slice Glitch)"
+          "126. RGBずれ (RGB Split / Chromatic",
+          "Displacement) · jitter [amp:0."
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2160,11 +2134,11 @@
         "cueId": "mo05_14",
         "kind": "page",
         "index": 2,
-        "start": 40.18899643402955,
+        "start": 40.887793783169066,
         "end": 42,
-        "text": " · jitter [amp:0.025 rate:6]\nあいうえお Aiueo 0123",
+        "text": "006 rate:30]\nあいうえお Aiueo 0123",
         "lines": [
-          " · jitter [amp:0.025 rate:6]",
+          "006 rate:30]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2178,10 +2152,10 @@
         "kind": "page",
         "index": 1,
         "start": 42,
-        "end": 43.13528336380256,
-        "text": "127. ブロックノイズ (Block Noise)",
+        "end": 43.224938875305625,
+        "text": "127. 色収差 (Chromatic Aberration)",
         "lines": [
-          "127. ブロックノイズ (Block Noise)"
+          "127. 色収差 (Chromatic Aberration)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2191,8 +2165,70 @@
         "cueId": "mo05_15",
         "kind": "page",
         "index": 2,
-        "start": 43.13528336380256,
+        "start": 43.224938875305625,
         "end": 45,
+        "text": " · jitter [amp:0.004 rate:26]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · jitter [amp:0.004 rate:26]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo05_16": [
+      {
+        "id": "mo05_16:page1",
+        "cueId": "mo05_16",
+        "kind": "page",
+        "index": 1,
+        "start": 45,
+        "end": 46.18899643402955,
+        "text": "128. スライスグリッチ (Slice Glitch)",
+        "lines": [
+          "128. スライスグリッチ (Slice Glitch)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_16:page2",
+        "cueId": "mo05_16",
+        "kind": "page",
+        "index": 2,
+        "start": 46.18899643402955,
+        "end": 48,
+        "text": " · jitter [amp:0.025 rate:6]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · jitter [amp:0.025 rate:6]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo05_17": [
+      {
+        "id": "mo05_17:page1",
+        "cueId": "mo05_17",
+        "kind": "page",
+        "index": 1,
+        "start": 48,
+        "end": 49.13528336380256,
+        "text": "129. ブロックノイズ (Block Noise)",
+        "lines": [
+          "129. ブロックノイズ (Block Noise)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_17:page2",
+        "cueId": "mo05_17",
+        "kind": "page",
+        "index": 2,
+        "start": 49.13528336380256,
+        "end": 51,
         "text": " · shiver [amount:0.9 interval:1.5]\nあいうえお Aiueo 0123",
         "lines": [
           " · shiver [amount:0.9 interval:1.5]",
@@ -2202,68 +2238,20 @@
         "pinned": false
       }
     ],
-    "mo05_16": [
+    "mo05_18": [
       {
-        "id": "mo05_16:single0",
-        "cueId": "mo05_16",
+        "id": "mo05_18:single0",
+        "cueId": "mo05_18",
         "kind": "single",
         "index": 0,
-        "start": 45,
-        "end": 48,
-        "text": "128. ノイズ (Film Noise) · jitter [amp\n:0.015 rate:18]あいうえお Aiueo 0123",
+        "start": 51,
+        "end": 54,
+        "text": "130. ノイズ (Film Noise) · jitter [amp\n:0.015 rate:18]あいうえお Aiueo 0123",
         "lines": [
-          "128. ノイズ (Film Noise) · jitter [amp",
+          "130. ノイズ (Film Noise) · jitter [amp",
           ":0.015 rate:18]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8599999999999999,
-        "pinned": false
-      }
-    ],
-    "mo05_17": [
-      {
-        "id": "mo05_17:single0",
-        "cueId": "mo05_17",
-        "kind": "single",
-        "index": 0,
-        "start": 48,
-        "end": 51,
-        "text": "129. 砂嵐 (TV Static) · jitter [amp\n:0.03 rate:8]あいうえお Aiueo 0123",
-        "lines": [
-          "129. 砂嵐 (TV Static) · jitter [amp",
-          ":0.03 rate:8]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.94,
-        "pinned": false
-      }
-    ],
-    "mo05_18": [
-      {
-        "id": "mo05_18:page1",
-        "cueId": "mo05_18",
-        "kind": "page",
-        "index": 1,
-        "start": 51,
-        "end": 52.109360518999075,
-        "text": "130. データモッシュ (Datamosh)",
-        "lines": [
-          "130. データモッシュ (Datamosh)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_18:page2",
-        "cueId": "mo05_18",
-        "kind": "page",
-        "index": 2,
-        "start": 52.109360518999075,
-        "end": 54,
-        "text": " · wobbleWarp [amount:0.15 speed:1]\nあいうえお Aiueo 0123",
-        "lines": [
-          " · wobbleWarp [amount:0.15 speed:1]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2275,91 +2263,77 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "131. ジッター (Jitter) · jitter [\namp:0.01]あいうえお Aiueo 0123",
+        "text": "131. 砂嵐 (TV Static) · jitter [amp\n:0.03 rate:8]あいうえお Aiueo 0123",
         "lines": [
-          "131. ジッター (Jitter) · jitter [",
+          "131. 砂嵐 (TV Static) · jitter [amp",
+          ":0.03 rate:8]あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "mo05_20": [
+      {
+        "id": "mo05_20:page1",
+        "cueId": "mo05_20",
+        "kind": "page",
+        "index": 1,
+        "start": 57,
+        "end": 58.109360518999075,
+        "text": "132. データモッシュ (Datamosh)",
+        "lines": [
+          "132. データモッシュ (Datamosh)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_20:page2",
+        "cueId": "mo05_20",
+        "kind": "page",
+        "index": 2,
+        "start": 58.109360518999075,
+        "end": 60,
+        "text": " · wobbleWarp [amount:0.15 speed:1]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · wobbleWarp [amount:0.15 speed:1]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo05_21": [
+      {
+        "id": "mo05_21:single0",
+        "cueId": "mo05_21",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "133. ジッター (Jitter) · jitter [\namp:0.01]あいうえお Aiueo 0123",
+        "lines": [
+          "133. ジッター (Jitter) · jitter [",
           "amp:0.01]あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
       }
     ],
-    "mo05_20": [
+    "mo05_22": [
       {
-        "id": "mo05_20:single0",
-        "cueId": "mo05_20",
+        "id": "mo05_22:single0",
+        "cueId": "mo05_22",
         "kind": "single",
         "index": 0,
-        "start": 57,
-        "end": 60,
-        "text": "132. パーティクル (Particles) · drift\n[vy:-0.05]あいうえお Aiueo 0123",
+        "start": 63,
+        "end": 66,
+        "text": "134. パーティクル (Particles) · drift\n[vy:-0.05]あいうえお Aiueo 0123",
         "lines": [
-          "132. パーティクル (Particles) · drift",
+          "134. パーティクル (Particles) · drift",
           "[vy:-0.05]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8999999999999999,
-        "pinned": false
-      }
-    ],
-    "mo05_21": [
-      {
-        "id": "mo05_21:page1",
-        "cueId": "mo05_21",
-        "kind": "page",
-        "index": 1,
-        "start": 60,
-        "end": 61.19559228650138,
-        "text": "133. パーティクルバースト (Particle Burst)",
-        "lines": [
-          "133. パーティクルバースト (Particle Burst)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_21:page2",
-        "cueId": "mo05_21",
-        "kind": "page",
-        "index": 2,
-        "start": 61.19559228650138,
-        "end": 63,
-        "text": " · shiver [amount:1 interval:1.2]\nあいうえお Aiueo 0123",
-        "lines": [
-          " · shiver [amount:1 interval:1.2]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo05_22": [
-      {
-        "id": "mo05_22:page1",
-        "cueId": "mo05_22",
-        "kind": "page",
-        "index": 1,
-        "start": 63,
-        "end": 64.26730310262529,
-        "text": "134. パーティクル集合 (Particle Assembly)",
-        "lines": [
-          "134. パーティクル集合 (Particle Assembly)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo05_22:page2",
-        "cueId": "mo05_22",
-        "kind": "page",
-        "index": 2,
-        "start": 64.26730310262529,
-        "end": 66,
-        "text": " · pulse [amount:0.12 bpm:90]\nあいうえお Aiueo 0123",
-        "lines": [
-          " · pulse [amount:0.12 bpm:90]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2370,10 +2344,10 @@
         "kind": "page",
         "index": 1,
         "start": 66,
-        "end": 67.08921438082557,
-        "text": "135. ダストアウト (Dust Out)",
+        "end": 67.19559228650138,
+        "text": "135. パーティクルバースト (Particle Burst)",
         "lines": [
-          "135. ダストアウト (Dust Out)"
+          "135. パーティクルバースト (Particle Burst)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2383,11 +2357,11 @@
         "cueId": "mo05_23",
         "kind": "page",
         "index": 2,
-        "start": 67.08921438082557,
+        "start": 67.19559228650138,
         "end": 69,
-        "text": " · dissolve [speed:1.2 intensity:0.35]\nあいうえお Aiueo 0123",
+        "text": " · shiver [amount:1 interval:1.2]\nあいうえお Aiueo 0123",
         "lines": [
-          " · dissolve [speed:1.2 intensity:0.35]",
+          " · shiver [amount:1 interval:1.2]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2401,10 +2375,10 @@
         "kind": "page",
         "index": 1,
         "start": 69,
-        "end": 70.1907613344739,
-        "text": "136. サノス消滅 (Thanos Disintegration)",
+        "end": 70.26730310262529,
+        "text": "136. パーティクル集合 (Particle Assembly)",
         "lines": [
-          "136. サノス消滅 (Thanos Disintegration)"
+          "136. パーティクル集合 (Particle Assembly)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2414,11 +2388,11 @@
         "cueId": "mo05_24",
         "kind": "page",
         "index": 2,
-        "start": 70.1907613344739,
+        "start": 70.26730310262529,
         "end": 72,
-        "text": " · dissolve [speed:1.8 intensity:0.5]\nあいうえお Aiueo 0123",
+        "text": " · pulse [amount:0.12 bpm:90]\nあいうえお Aiueo 0123",
         "lines": [
-          " · dissolve [speed:1.8 intensity:0.5]",
+          " · pulse [amount:0.12 bpm:90]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2432,10 +2406,10 @@
         "kind": "page",
         "index": 1,
         "start": 72,
-        "end": 73.21804511278195,
-        "text": "137. ディスインテグレート (Disintegrate)",
+        "end": 73.08921438082557,
+        "text": "137. ダストアウト (Dust Out)",
         "lines": [
-          "137. ディスインテグレート (Disintegrate)"
+          "137. ダストアウト (Dust Out)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2445,11 +2419,11 @@
         "cueId": "mo05_25",
         "kind": "page",
         "index": 2,
-        "start": 73.21804511278195,
+        "start": 73.08921438082557,
         "end": 75,
-        "text": " · dissolve [intensity:0.45]\nあいうえお Aiueo 0123",
+        "text": " · dissolve [speed:1.2 intensity:0.35]\nあいうえお Aiueo 0123",
         "lines": [
-          " · dissolve [intensity:0.45]",
+          " · dissolve [speed:1.2 intensity:0.35]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2458,35 +2432,63 @@
     ],
     "mo05_26": [
       {
-        "id": "mo05_26:single0",
+        "id": "mo05_26:page1",
         "cueId": "mo05_26",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 75,
-        "end": 78,
-        "text": "138. 紙吹雪 (Confetti) · drift [vx:\n0.06 vy:0.12]あいうえお Aiueo 0123",
+        "end": 76.1907613344739,
+        "text": "138. サノス消滅 (Thanos Disintegration)",
         "lines": [
-          "138. 紙吹雪 (Confetti) · drift [vx:",
-          "0.06 vy:0.12]あいうえお Aiueo 0123"
+          "138. サノス消滅 (Thanos Disintegration)"
         ],
-        "fontScale": 0.94,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_26:page2",
+        "cueId": "mo05_26",
+        "kind": "page",
+        "index": 2,
+        "start": 76.1907613344739,
+        "end": 78,
+        "text": " · dissolve [speed:1.8 intensity:0.5]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · dissolve [speed:1.8 intensity:0.5]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo05_27": [
       {
-        "id": "mo05_27:single0",
+        "id": "mo05_27:page1",
         "cueId": "mo05_27",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 78,
-        "end": 81,
-        "text": "139. 雪 (Snowfall) · drift [vx:0\n.02 vy:0.08]あいうえお Aiueo 0123",
+        "end": 79.21804511278195,
+        "text": "139. ディスインテグレート (Disintegrate)",
         "lines": [
-          "139. 雪 (Snowfall) · drift [vx:0",
-          ".02 vy:0.08]あいうえお Aiueo 0123"
+          "139. ディスインテグレート (Disintegrate)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo05_27:page2",
+        "cueId": "mo05_27",
+        "kind": "page",
+        "index": 2,
+        "start": 79.21804511278195,
+        "end": 81,
+        "text": " · dissolve [intensity:0.45]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · dissolve [intensity:0.45]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2498,12 +2500,12 @@
         "index": 0,
         "start": 81,
         "end": 84,
-        "text": "140. テキストマスク (Text Mask) · marquee\n[speed:0.15]あいうえお Aiueo 0123",
+        "text": "140. 紙吹雪 (Confetti) · drift [vx:\n0.06 vy:0.12]あいうえお Aiueo 0123",
         "lines": [
-          "140. テキストマスク (Text Mask) · marquee",
-          "[speed:0.15]あいうえお Aiueo 0123"
+          "140. 紙吹雪 (Confetti) · drift [vx:",
+          "0.06 vy:0.12]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.94,
         "pinned": false
       }
     ]
@@ -2512,31 +2514,25 @@
   "beatCandidates": {},
   "candidatePool": {},
   "beatWarnings": {
-    "mo05_01": [
+    "mo05_03": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_04": [
+    "mo05_06": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_05": [
+    "mo05_07": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_09": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo05_12": [
+    "mo05_11": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2548,19 +2544,19 @@
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_15": [
+    "mo05_16": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_18": [
+    "mo05_17": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_21": [
+    "mo05_20": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2572,7 +2568,13 @@
         "message": "The cue is too fast to read"
       }
     ],
-    "mo05_24": [
+    "mo05_25": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo05_26": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"

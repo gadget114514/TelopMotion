@@ -253,11 +253,26 @@
         "id": "mo01_15",
         "start": 42,
         "end": 45,
-        "text": "15. ジオメトリーイン (Geometry In) · geometry\nあいうえお Aiueo 0123",
+        "text": "15. フォントミラーイン (Font Mirror In) · fontMirror\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
           "index": 15,
+          "presetId": "fontMirrorIn",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "fontMirror"
+        }
+      },
+      {
+        "id": "mo01_16",
+        "start": 45,
+        "end": 48,
+        "text": "16. ジオメトリーイン (Geometry In) · geometry\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "01",
+          "index": 16,
           "presetId": "geometryIn",
           "group": "entrance",
           "phase": "enter",
@@ -265,14 +280,14 @@
         }
       },
       {
-        "id": "mo01_16",
-        "start": 45,
-        "end": 48,
-        "text": "16. グリッチイン (Glitch In) · glitchIn\nあいうえお Aiueo 0123",
+        "id": "mo01_17",
+        "start": 48,
+        "end": 51,
+        "text": "17. グリッチイン (Glitch In) · glitchIn\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 16,
+          "index": 17,
           "presetId": "glitchIn",
           "group": "entrance",
           "phase": "enter",
@@ -280,14 +295,14 @@
         }
       },
       {
-        "id": "mo01_17",
-        "start": 48,
-        "end": 51,
-        "text": "17. ターンイン (Turn In) · rotateIn\nあいうえお Aiueo 0123",
+        "id": "mo01_18",
+        "start": 51,
+        "end": 54,
+        "text": "18. ターンイン (Turn In) · rotateIn\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 17,
+          "index": 18,
           "presetId": "growTurn",
           "group": "entrance",
           "phase": "enter",
@@ -295,14 +310,14 @@
         }
       },
       {
-        "id": "mo01_18",
-        "start": 51,
-        "end": 54,
-        "text": "18. アイリスイン (Iris In) · irisOpen\nあいうえお Aiueo 0123",
+        "id": "mo01_19",
+        "start": 54,
+        "end": 57,
+        "text": "19. アイリスイン (Iris In) · irisOpen\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 18,
+          "index": 19,
           "presetId": "irisIn",
           "group": "entrance",
           "phase": "enter",
@@ -310,14 +325,14 @@
         }
       },
       {
-        "id": "mo01_19",
-        "start": 54,
-        "end": 57,
-        "text": "19. 直線描画イン (Line Draw In) · lineDrawOn\nあいうえお Aiueo 0123",
+        "id": "mo01_20",
+        "start": 57,
+        "end": 60,
+        "text": "20. 直線描画イン (Line Draw In) · lineDrawOn\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 19,
+          "index": 20,
           "presetId": "lineDrawIn",
           "group": "entrance",
           "phase": "enter",
@@ -325,14 +340,14 @@
         }
       },
       {
-        "id": "mo01_20",
-        "start": 57,
-        "end": 60,
-        "text": "20. ページめくりイン (Page Curl In) · pageCurl\nあいうえお Aiueo 0123",
+        "id": "mo01_21",
+        "start": 60,
+        "end": 63,
+        "text": "21. ページめくりイン (Page Curl In) · pageCurl\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 20,
+          "index": 21,
           "presetId": "pageCurlIn",
           "group": "entrance",
           "phase": "enter",
@@ -340,14 +355,14 @@
         }
       },
       {
-        "id": "mo01_21",
-        "start": 60,
-        "end": 63,
-        "text": "21. 文字上にパーティクルイン (Particles on Text In) · particlesOnText\nあいうえお Aiueo 0123",
+        "id": "mo01_22",
+        "start": 63,
+        "end": 66,
+        "text": "22. 文字上にパーティクルイン (Particles on Text In) · particlesOnText\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 21,
+          "index": 22,
           "presetId": "particlesOnTextIn",
           "group": "entrance",
           "phase": "enter",
@@ -355,14 +370,14 @@
         }
       },
       {
-        "id": "mo01_22",
-        "start": 63,
-        "end": 66,
-        "text": "22. ポップイン (Pop In) · elasticPop\nあいうえお Aiueo 0123",
+        "id": "mo01_23",
+        "start": 66,
+        "end": 69,
+        "text": "23. ポップイン (Pop In) · elasticPop\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 22,
+          "index": 23,
           "presetId": "popIn",
           "group": "entrance",
           "phase": "enter",
@@ -370,14 +385,14 @@
         }
       },
       {
-        "id": "mo01_23",
-        "start": 66,
-        "end": 69,
-        "text": "23. スキャンイン (Scan In) · scanline\nあいうえお Aiueo 0123",
+        "id": "mo01_24",
+        "start": 69,
+        "end": 72,
+        "text": "24. スキャンイン (Scan In) · scanline\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 23,
+          "index": 24,
           "presetId": "scanIn",
           "group": "entrance",
           "phase": "enter",
@@ -385,14 +400,14 @@
         }
       },
       {
-        "id": "mo01_24",
-        "start": 69,
-        "end": 72,
-        "text": "24. ステルスイン (Stealth In) · stealth\nあいうえお Aiueo 0123",
+        "id": "mo01_25",
+        "start": 72,
+        "end": 75,
+        "text": "25. ステルスイン (Stealth In) · stealth\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 24,
+          "index": 25,
           "presetId": "stealthIn",
           "group": "entrance",
           "phase": "enter",
@@ -400,14 +415,14 @@
         }
       },
       {
-        "id": "mo01_25",
-        "start": 72,
-        "end": 75,
-        "text": "25. タイプライター (Typewriter) · typewriter ×stagger\nあいうえお Aiueo 0123",
+        "id": "mo01_26",
+        "start": 75,
+        "end": 78,
+        "text": "26. タイプライター (Typewriter) · typewriter ×stagger\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 25,
+          "index": 26,
           "presetId": "typewriter",
           "group": "entrance",
           "phase": "enter",
@@ -416,14 +431,14 @@
         }
       },
       {
-        "id": "mo01_26",
-        "start": 75,
-        "end": 78,
-        "text": "26. ウェーブイン (Wave In) · waveRise [amp:0.2]\nあいうえお Aiueo 0123",
+        "id": "mo01_27",
+        "start": 78,
+        "end": 81,
+        "text": "27. ウェーブイン (Wave In) · waveRise [amp:0.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
-          "index": 26,
+          "index": 27,
           "presetId": "waveIn",
           "group": "entrance",
           "phase": "enter",
@@ -431,34 +446,18 @@
         }
       },
       {
-        "id": "mo01_27",
-        "start": 78,
-        "end": 81,
-        "text": "27. ズームイン (Zoom In) · zoomIn [from:0.2]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "01",
-          "index": 27,
-          "presetId": "zoomIn",
-          "group": "entrance",
-          "phase": "enter",
-          "type": "zoomIn"
-        }
-      },
-      {
         "id": "mo01_28",
         "start": 81,
         "end": 84,
-        "text": "28. タイプライター (Typewriter) · typewriter ×stagger\nあいうえお Aiueo 0123",
+        "text": "28. ズームイン (Zoom In) · zoomIn [from:0.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
           "index": 28,
-          "presetId": "te_100",
+          "presetId": "zoomIn",
           "group": "entrance",
           "phase": "enter",
-          "type": "typewriter",
-          "staged": "typing"
+          "type": "zoomIn"
         }
       }
     ],
@@ -1146,16 +1145,16 @@
         {
           "id": "m_mo01_15",
           "phase": "enter",
-          "type": "geometry",
+          "type": "fontMirror",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.6,
           "ease": "easeOutCubic",
           "params": {
-            "shape": "circle",
-            "feather": 0.05,
-            "spin": 0,
-            "speed": 0.6
+            "dir": "down",
+            "distance": 0.25,
+            "fade": true,
+            "reflection": 0.3
           },
           "enabled": true
         }
@@ -1193,13 +1192,16 @@
         {
           "id": "m_mo01_16",
           "phase": "enter",
-          "type": "glitchIn",
+          "type": "geometry",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
-          "ease": "linear",
+          "duration": 0.7,
+          "ease": "easeOutCubic",
           "params": {
-            "intensity": 0.5
+            "shape": "circle",
+            "feather": 0.05,
+            "spin": 0,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1237,13 +1239,13 @@
         {
           "id": "m_mo01_17",
           "phase": "enter",
-          "type": "rotateIn",
+          "type": "glitchIn",
           "from": "start",
           "delay": 0,
           "duration": 0.6,
-          "ease": "easeOutCubic",
+          "ease": "linear",
           "params": {
-            "angle": 90
+            "intensity": 0.5
           },
           "enabled": true
         }
@@ -1281,13 +1283,13 @@
         {
           "id": "m_mo01_18",
           "phase": "enter",
-          "type": "irisOpen",
+          "type": "rotateIn",
           "from": "start",
           "delay": 0,
           "duration": 0.6,
           "ease": "easeOutCubic",
           "params": {
-            "soft": 0.08
+            "angle": 90
           },
           "enabled": true
         }
@@ -1325,14 +1327,13 @@
         {
           "id": "m_mo01_19",
           "phase": "enter",
-          "type": "lineDrawOn",
+          "type": "irisOpen",
           "from": "start",
           "delay": 0,
-          "duration": 0.8,
+          "duration": 0.6,
           "ease": "easeOutCubic",
           "params": {
-            "linePosition": "underline",
-            "stroke": 4
+            "soft": 0.08
           },
           "enabled": true
         }
@@ -1370,16 +1371,14 @@
         {
           "id": "m_mo01_20",
           "phase": "enter",
-          "type": "pageCurl",
+          "type": "lineDrawOn",
           "from": "start",
           "delay": 0,
           "duration": 0.8,
-          "ease": "easeInOutCubic",
+          "ease": "easeOutCubic",
           "params": {
-            "dir": "bottomRight",
-            "radius": 0.2,
-            "curlAngle": 90,
-            "shadow": 0.5
+            "linePosition": "underline",
+            "stroke": 4
           },
           "enabled": true
         }
@@ -1417,15 +1416,16 @@
         {
           "id": "m_mo01_21",
           "phase": "enter",
-          "type": "particlesOnText",
+          "type": "pageCurl",
           "from": "start",
           "delay": 0,
           "duration": 0.8,
-          "ease": "easeOutCubic",
+          "ease": "easeInOutCubic",
           "params": {
-            "count": 24,
-            "spread": 0.4,
-            "speed": 1
+            "dir": "bottomRight",
+            "radius": 0.2,
+            "curlAngle": 90,
+            "shadow": 0.5
           },
           "enabled": true
         }
@@ -1463,12 +1463,16 @@
         {
           "id": "m_mo01_22",
           "phase": "enter",
-          "type": "elasticPop",
+          "type": "particlesOnText",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.8,
           "ease": "easeOutCubic",
-          "params": {},
+          "params": {
+            "count": 24,
+            "spread": 0.4,
+            "speed": 1
+          },
           "enabled": true
         }
       ]
@@ -1505,17 +1509,12 @@
         {
           "id": "m_mo01_23",
           "phase": "enter",
-          "type": "scanline",
+          "type": "elasticPop",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
-          "ease": "linear",
-          "params": {
-            "lines": 8,
-            "bandWidth": 0.3,
-            "depth": 0.85,
-            "speed": 1
-          },
+          "ease": "easeOutCubic",
+          "params": {},
           "enabled": true
         }
       ]
@@ -1552,6 +1551,53 @@
         {
           "id": "m_mo01_24",
           "phase": "enter",
+          "type": "scanline",
+          "from": "start",
+          "delay": 0,
+          "duration": 0.7,
+          "ease": "linear",
+          "params": {
+            "lines": 8,
+            "bandWidth": 0.3,
+            "depth": 0.85,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo01_25": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo01_25",
+          "phase": "enter",
           "type": "stealth",
           "from": "start",
           "delay": 0,
@@ -1566,7 +1612,7 @@
         }
       ]
     },
-    "mo01_25": {
+    "mo01_26": {
       "animation": {
         "type": "stagger",
         "enabled": true,
@@ -1603,50 +1649,6 @@
       },
       "motions": []
     },
-    "mo01_26": {
-      "animation": {
-        "type": "simultaneous",
-        "enabled": true,
-        "params": {}
-      },
-      "enter": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "in": {
-            "duration": 0.4,
-            "ease": "cubicOut"
-          }
-        }
-      },
-      "exit": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 0.4,
-            "ease": "cubicIn"
-          }
-        }
-      },
-      "motions": [
-        {
-          "id": "m_mo01_26",
-          "phase": "enter",
-          "type": "waveRise",
-          "from": "start",
-          "delay": 0,
-          "duration": 0.9,
-          "ease": "linear",
-          "params": {
-            "amp": 0.2
-          },
-          "enabled": true
-        }
-      ]
-    },
     "mo01_27": {
       "animation": {
         "type": "simultaneous",
@@ -1679,13 +1681,13 @@
         {
           "id": "m_mo01_27",
           "phase": "enter",
-          "type": "zoomIn",
+          "type": "waveRise",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
-          "ease": "easeOutCubic",
+          "duration": 0.9,
+          "ease": "linear",
           "params": {
-            "from": 0.2
+            "amp": 0.2
           },
           "enabled": true
         }
@@ -1693,25 +1695,18 @@
     },
     "mo01_28": {
       "animation": {
-        "type": "stagger",
+        "type": "simultaneous",
         "enabled": true,
-        "params": {
-          "each": 0.07
-        }
+        "params": {}
       },
       "enter": {
-        "type": "typewriter",
+        "type": "fade",
         "enabled": true,
-        "params": {
-          "cursor": false,
-          "cursorShape": "bar",
-          "blink": 0.5,
-          "cursorAfter": "blink"
-        },
+        "params": {},
         "motion": {
           "in": {
-            "duration": 0.35,
-            "ease": "linear"
+            "duration": 0.4,
+            "ease": "cubicOut"
           }
         }
       },
@@ -1726,7 +1721,21 @@
           }
         }
       },
-      "motions": []
+      "motions": [
+        {
+          "id": "m_mo01_28",
+          "phase": "enter",
+          "type": "zoomIn",
+          "from": "start",
+          "delay": 0,
+          "duration": 0.7,
+          "ease": "easeOutCubic",
+          "params": {
+            "from": 0.2
+          },
+          "enabled": true
+        }
+      ]
     }
   },
   "beatKindStyle": {
@@ -2060,12 +2069,12 @@
         "index": 0,
         "start": 42,
         "end": 45,
-        "text": "15. ジオメトリーイン (Geometry In)\n · geometryあいうえお Aiueo 0123",
+        "text": "15. フォントミラーイン (Font Mirror In\n) · fontMirrorあいうえお Aiueo 0123",
         "lines": [
-          "15. ジオメトリーイン (Geometry In)",
-          " · geometryあいうえお Aiueo 0123"
+          "15. フォントミラーイン (Font Mirror In",
+          ") · fontMirrorあいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -2077,10 +2086,10 @@
         "index": 0,
         "start": 45,
         "end": 48,
-        "text": "16. グリッチイン (Glitch In) ·\nglitchInあいうえお Aiueo 0123",
+        "text": "16. ジオメトリーイン (Geometry In)\n · geometryあいうえお Aiueo 0123",
         "lines": [
-          "16. グリッチイン (Glitch In) ·",
-          "glitchInあいうえお Aiueo 0123"
+          "16. ジオメトリーイン (Geometry In)",
+          " · geometryあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2094,10 +2103,10 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "17. ターンイン (Turn In) ·\nrotateInあいうえお Aiueo 0123",
+        "text": "17. グリッチイン (Glitch In) ·\nglitchInあいうえお Aiueo 0123",
         "lines": [
-          "17. ターンイン (Turn In) ·",
-          "rotateInあいうえお Aiueo 0123"
+          "17. グリッチイン (Glitch In) ·",
+          "glitchInあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2111,10 +2120,10 @@
         "index": 0,
         "start": 51,
         "end": 54,
-        "text": "18. アイリスイン (Iris In) ·\nirisOpenあいうえお Aiueo 0123",
+        "text": "18. ターンイン (Turn In) ·\nrotateInあいうえお Aiueo 0123",
         "lines": [
-          "18. アイリスイン (Iris In) ·",
-          "irisOpenあいうえお Aiueo 0123"
+          "18. ターンイン (Turn In) ·",
+          "rotateInあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2128,10 +2137,10 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "19. 直線描画イン (Line Draw In) ·\nlineDrawOnあいうえお Aiueo 0123",
+        "text": "19. アイリスイン (Iris In) ·\nirisOpenあいうえお Aiueo 0123",
         "lines": [
-          "19. 直線描画イン (Line Draw In) ·",
-          "lineDrawOnあいうえお Aiueo 0123"
+          "19. アイリスイン (Iris In) ·",
+          "irisOpenあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2145,10 +2154,10 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "20. ページめくりイン (Page Curl In\n) · pageCurlあいうえお Aiueo 0123",
+        "text": "20. 直線描画イン (Line Draw In) ·\nlineDrawOnあいうえお Aiueo 0123",
         "lines": [
-          "20. ページめくりイン (Page Curl In",
-          ") · pageCurlあいうえお Aiueo 0123"
+          "20. 直線描画イン (Line Draw In) ·",
+          "lineDrawOnあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2156,49 +2165,49 @@
     ],
     "mo01_21": [
       {
-        "id": "mo01_21:page1",
+        "id": "mo01_21:single0",
         "cueId": "mo01_21",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "21. ページめくりイン (Page Curl In\n) · pageCurlあいうえお Aiueo 0123",
+        "lines": [
+          "21. ページめくりイン (Page Curl In",
+          ") · pageCurlあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo01_22": [
+      {
+        "id": "mo01_22:page1",
+        "cueId": "mo01_22",
         "kind": "page",
         "index": 1,
-        "start": 60,
-        "end": 61.05160142348755,
-        "text": "21. 文字上にパーティクルイン (",
+        "start": 63,
+        "end": 64.05160142348754,
+        "text": "22. 文字上にパーティクルイン (",
         "lines": [
-          "21. 文字上にパーティクルイン ("
+          "22. 文字上にパーティクルイン ("
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo01_21:page2",
-        "cueId": "mo01_21",
+        "id": "mo01_22:page2",
+        "cueId": "mo01_22",
         "kind": "page",
         "index": 2,
-        "start": 61.05160142348755,
-        "end": 63,
+        "start": 64.05160142348754,
+        "end": 66,
         "text": "Particles on Text In) · particlesOnText\nあいうえお Aiueo 0123",
         "lines": [
           "Particles on Text In) · particlesOnText",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo01_22": [
-      {
-        "id": "mo01_22:single0",
-        "cueId": "mo01_22",
-        "kind": "single",
-        "index": 0,
-        "start": 63,
-        "end": 66,
-        "text": "22. ポップイン (Pop In) ·\nelasticPopあいうえお Aiueo 0123",
-        "lines": [
-          "22. ポップイン (Pop In) ·",
-          "elasticPopあいうえお Aiueo 0123"
-        ],
-        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2210,10 +2219,10 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "23. スキャンイン (Scan In) ·\nscanlineあいうえお Aiueo 0123",
+        "text": "23. ポップイン (Pop In) ·\nelasticPopあいうえお Aiueo 0123",
         "lines": [
-          "23. スキャンイン (Scan In) ·",
-          "scanlineあいうえお Aiueo 0123"
+          "23. ポップイン (Pop In) ·",
+          "elasticPopあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2227,10 +2236,10 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "24. ステルスイン (Stealth In) ·\nstealthあいうえお Aiueo 0123",
+        "text": "24. スキャンイン (Scan In) ·\nscanlineあいうえお Aiueo 0123",
         "lines": [
-          "24. ステルスイン (Stealth In) ·",
-          "stealthあいうえお Aiueo 0123"
+          "24. スキャンイン (Scan In) ·",
+          "scanlineあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2244,12 +2253,12 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "25. タイプライター (Typewriter) ·\ntypewriter ×staggerあいうえお Aiueo 0123",
+        "text": "25. ステルスイン (Stealth In) ·\nstealthあいうえお Aiueo 0123",
         "lines": [
-          "25. タイプライター (Typewriter) ·",
-          "typewriter ×staggerあいうえお Aiueo 0123"
+          "25. ステルスイン (Stealth In) ·",
+          "stealthあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2261,12 +2270,12 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "26. ウェーブイン (Wave In) · waveRise\n[amp:0.2]あいうえお Aiueo 0123",
+        "text": "26. タイプライター (Typewriter) ·\ntypewriter ×staggerあいうえお Aiueo 0123",
         "lines": [
-          "26. ウェーブイン (Wave In) · waveRise",
-          "[amp:0.2]あいうえお Aiueo 0123"
+          "26. タイプライター (Typewriter) ·",
+          "typewriter ×staggerあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8999999999999999,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2278,12 +2287,12 @@
         "index": 0,
         "start": 78,
         "end": 81,
-        "text": "27. ズームイン (Zoom In) · zoomIn\n[from:0.2]あいうえお Aiueo 0123",
+        "text": "27. ウェーブイン (Wave In) · waveRise\n[amp:0.2]あいうえお Aiueo 0123",
         "lines": [
-          "27. ズームイン (Zoom In) · zoomIn",
-          "[from:0.2]あいうえお Aiueo 0123"
+          "27. ウェーブイン (Wave In) · waveRise",
+          "[amp:0.2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -2295,12 +2304,12 @@
         "index": 0,
         "start": 81,
         "end": 84,
-        "text": "28. タイプライター (Typewriter) ·\ntypewriter ×staggerあいうえお Aiueo 0123",
+        "text": "28. ズームイン (Zoom In) · zoomIn\n[from:0.2]あいうえお Aiueo 0123",
         "lines": [
-          "28. タイプライター (Typewriter) ·",
-          "typewriter ×staggerあいうえお Aiueo 0123"
+          "28. ズームイン (Zoom In) · zoomIn",
+          "[from:0.2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 1,
         "pinned": false
       }
     ]
@@ -2315,7 +2324,7 @@
         "message": "The cue is too fast to read"
       }
     ],
-    "mo01_21": [
+    "mo01_22": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
