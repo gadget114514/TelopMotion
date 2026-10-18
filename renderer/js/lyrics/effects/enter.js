@@ -1730,5 +1730,47 @@
     },
   });
 
+  fx.register({
+    group: 'enter',
+    type: 'fontMirror',
+    tags: ['basic', 'font'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['down', 'up', 'left', 'right'], default: 'down', random: 'any' },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, unit: 'frame', random: [0.1, 0.5] },
+      { key: 'fade', kind: 'bool', default: true },
+      { key: 'reflection', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const k = 1 - progress;
+      const distance = (params.distance == null ? 0.25 : Number(params.distance)) * (info && info.shortSide ? info.shortSide : 1080);
+      const dir = params.dir || 'down';
+      const reflection = params.reflection == null ? 0.3 : Number(params.reflection);
+
+      const mirrorScale = -1 + 2 * progress;
+
+      if (dir === 'down') {
+        state.scaleY *= mirrorScale;
+        state.y += distance * k;
+      } else if (dir === 'up') {
+        state.scaleY *= mirrorScale;
+        state.y -= distance * k;
+      } else if (dir === 'left') {
+        state.scaleX *= mirrorScale;
+        state.x -= distance * k;
+      } else if (dir === 'right') {
+        state.scaleX *= mirrorScale;
+        state.x += distance * k;
+      }
+
+      if (params.fade !== false) {
+        state.opacity *= clamp01(progress * 1.5);
+      }
+      if (reflection > 0) {
+        state.flash = Math.max(state.flash || 0, reflection * (1 - Math.abs(mirrorScale)));
+      }
+    },
+  });
+
   return fx;
 });

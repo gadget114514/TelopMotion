@@ -43,11 +43,11 @@
         "id": "mo14_01",
         "start": 0,
         "end": 3,
-        "text": "363. ブレンドモード合成 (Blend Mode Composite) · opacityPulse [min:0.55 period:2.4 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": "365. ブレンドモード合成 (Blend Mode Composite) · opacityPulse [min:0.55 period:2.4 speed:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 363,
+          "index": 365,
           "presetId": "te_267",
           "group": "emphasis",
           "phase": "hold",
@@ -58,11 +58,11 @@
         "id": "mo14_02",
         "start": 3,
         "end": 6,
-        "text": "364. HUD風 (Sci-Fi HUD) · sway [angle:2 speed:1.2]\nあいうえお Aiueo 0123",
+        "text": "366. HUD風 (Sci-Fi HUD) · sway [angle:2 speed:1.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 364,
+          "index": 366,
           "presetId": "te_294",
           "group": "emphasis",
           "phase": "hold",
@@ -73,11 +73,11 @@
         "id": "mo14_03",
         "start": 6,
         "end": 9,
-        "text": "365. SFインターフェース (Sci-Fi Interface) · drift [vx:0.02]\nあいうえお Aiueo 0123",
+        "text": "367. SFインターフェース (Sci-Fi Interface) · drift [vx:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 365,
+          "index": 367,
           "presetId": "te_295",
           "group": "emphasis",
           "phase": "hold",
@@ -88,11 +88,11 @@
         "id": "mo14_04",
         "start": 9,
         "end": 12,
-        "text": "366. ターミナル風 (Terminal Console) · jitter [amp:0.003 rate:30]\nあいうえお Aiueo 0123",
+        "text": "368. ターミナル風 (Terminal Console) · jitter [amp:0.003 rate:30]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 366,
+          "index": 368,
           "presetId": "te_296",
           "group": "emphasis",
           "phase": "hold",
@@ -103,11 +103,11 @@
         "id": "mo14_05",
         "start": 12,
         "end": 15,
-        "text": "367. マトリックス (Matrix Rain) · drift [vx:0 vy:0.15]\nあいうえお Aiueo 0123",
+        "text": "369. マトリックス (Matrix Rain) · drift [vx:0 vy:0.15]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 367,
+          "index": 369,
           "presetId": "te_297",
           "group": "emphasis",
           "phase": "hold",
@@ -118,11 +118,11 @@
         "id": "mo14_06",
         "start": 15,
         "end": 18,
-        "text": "368. コードレイン (Code Rain) · drift [vx:0 vy:0.12]\nあいうえお Aiueo 0123",
+        "text": "370. コードレイン (Code Rain) · drift [vx:0 vy:0.12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 368,
+          "index": 370,
           "presetId": "te_298",
           "group": "emphasis",
           "phase": "hold",
@@ -133,11 +133,11 @@
         "id": "mo14_07",
         "start": 18,
         "end": 21,
-        "text": "369. ロード中表示 (Loading State) · opacityPulse [min:0.4 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "text": "371. ロード中表示 (Loading State) · opacityPulse [min:0.4 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 369,
+          "index": 371,
           "presetId": "te_299",
           "group": "emphasis",
           "phase": "hold",
@@ -148,11 +148,11 @@
         "id": "mo14_08",
         "start": 21,
         "end": 24,
-        "text": "370. テープ貼り (Washi Tape) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "372. テープ貼り (Washi Tape) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 370,
+          "index": 372,
           "presetId": "te_311",
           "group": "emphasis",
           "phase": "hold",
@@ -163,11 +163,11 @@
         "id": "mo14_09",
         "start": 24,
         "end": 27,
-        "text": "371. ラベル (Tag Label) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "text": "373. ラベル (Tag Label) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 371,
+          "index": 373,
           "presetId": "te_312",
           "group": "emphasis",
           "phase": "hold",
@@ -178,11 +178,11 @@
         "id": "mo14_10",
         "start": 27,
         "end": 30,
-        "text": "372. カラーバー (Color Bars) · opacityPulse [min:0.5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "text": "374. カラーバー (Color Bars) · opacityPulse [min:0.5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 372,
+          "index": 374,
           "presetId": "te_313",
           "group": "emphasis",
           "phase": "hold",
@@ -193,11 +193,11 @@
         "id": "mo14_11",
         "start": 30,
         "end": 33,
-        "text": "373. インク滲み (Ink Bleed) · wobbleWarp [amount:0.08 scale:2.5 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": "375. インク滲み (Ink Bleed) · wobbleWarp [amount:0.08 scale:2.5 speed:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 373,
+          "index": 375,
           "presetId": "te_352",
           "group": "emphasis",
           "phase": "hold",
@@ -208,11 +208,11 @@
         "id": "mo14_12",
         "start": 33,
         "end": 36,
-        "text": "374. 水彩 (Watercolor Bleed) · wobbleWarp [scale:3 speed:0.4]\nあいうえお Aiueo 0123",
+        "text": "376. 水彩 (Watercolor Bleed) · wobbleWarp [scale:3 speed:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 374,
+          "index": 376,
           "presetId": "te_353",
           "group": "emphasis",
           "phase": "hold",
@@ -223,11 +223,11 @@
         "id": "mo14_13",
         "start": 36,
         "end": 39,
-        "text": "375. 墨流し (Suminagashi Marbling) · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
+        "text": "377. 墨流し (Suminagashi Marbling) · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 375,
+          "index": 377,
           "presetId": "te_354",
           "group": "emphasis",
           "phase": "hold",
@@ -238,11 +238,11 @@
         "id": "mo14_14",
         "start": 39,
         "end": 42,
-        "text": "376. かすれ (Dry Brush Distress) · shiver [amount:0.5]\nあいうえお Aiueo 0123",
+        "text": "378. かすれ (Dry Brush Distress) · shiver [amount:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 376,
+          "index": 378,
           "presetId": "te_355",
           "group": "emphasis",
           "phase": "hold",
@@ -253,11 +253,11 @@
         "id": "mo14_15",
         "start": 42,
         "end": 45,
-        "text": "377. グランジ (Grunge Distress) · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
+        "text": "379. グランジ (Grunge Distress) · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 377,
+          "index": 379,
           "presetId": "te_356",
           "group": "emphasis",
           "phase": "hold",
@@ -268,11 +268,11 @@
         "id": "mo14_16",
         "start": 45,
         "end": 48,
-        "text": "378. エイジング (Vintage Aging) · shiver [interval:3.5]\nあいうえお Aiueo 0123",
+        "text": "380. エイジング (Vintage Aging) · shiver [interval:3.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 378,
+          "index": 380,
           "presetId": "te_357",
           "group": "emphasis",
           "phase": "hold",
@@ -283,11 +283,11 @@
         "id": "mo14_17",
         "start": 48,
         "end": 51,
-        "text": "379. 石 (Stone Carving) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "381. 石 (Stone Carving) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 379,
+          "index": 381,
           "presetId": "te_358",
           "group": "emphasis",
           "phase": "hold",
@@ -298,11 +298,11 @@
         "id": "mo14_18",
         "start": 51,
         "end": 54,
-        "text": "380. 金属 (Metallic Surface) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "text": "382. 金属 (Metallic Surface) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 380,
+          "index": 382,
           "presetId": "te_359",
           "group": "emphasis",
           "phase": "hold",
@@ -313,11 +313,11 @@
         "id": "mo14_19",
         "start": 54,
         "end": 57,
-        "text": "381. クローム (Liquid Chrome) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "383. クローム (Liquid Chrome) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 381,
+          "index": 383,
           "presetId": "te_360",
           "group": "emphasis",
           "phase": "hold",
@@ -328,11 +328,11 @@
         "id": "mo14_20",
         "start": 57,
         "end": 60,
-        "text": "382. ゴールド (Metallic Gold) · breathing\nあいうえお Aiueo 0123",
+        "text": "384. ゴールド (Metallic Gold) · breathing\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 382,
+          "index": 384,
           "presetId": "te_361",
           "group": "emphasis",
           "phase": "hold",
@@ -343,11 +343,11 @@
         "id": "mo14_21",
         "start": 60,
         "end": 63,
-        "text": "383. ガラス (Frosted Glass) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "text": "385. ガラス (Frosted Glass) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 383,
+          "index": 385,
           "presetId": "te_362",
           "group": "emphasis",
           "phase": "hold",
@@ -358,11 +358,11 @@
         "id": "mo14_22",
         "start": 63,
         "end": 66,
-        "text": "384. 氷 (Frost & Ice) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "386. 氷 (Frost & Ice) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 384,
+          "index": 386,
           "presetId": "te_363",
           "group": "emphasis",
           "phase": "hold",
@@ -373,11 +373,11 @@
         "id": "mo14_23",
         "start": 66,
         "end": 69,
-        "text": "385. 凍結 (Freeze Over) · shiver [amount:0.3 interval:5]\nあいうえお Aiueo 0123",
+        "text": "387. 凍結 (Freeze Over) · shiver [amount:0.3 interval:5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 385,
+          "index": 387,
           "presetId": "te_364",
           "group": "emphasis",
           "phase": "hold",
@@ -388,11 +388,11 @@
         "id": "mo14_24",
         "start": 69,
         "end": 72,
-        "text": "386. バルーン (Inflatable Balloon) · jelly [freq:1.5]\nあいうえお Aiueo 0123",
+        "text": "388. バルーン (Inflatable Balloon) · jelly [freq:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 386,
+          "index": 388,
           "presetId": "te_366",
           "group": "emphasis",
           "phase": "hold",
@@ -403,11 +403,11 @@
         "id": "mo14_25",
         "start": 72,
         "end": 75,
-        "text": "387. ぷっくり (Puffy 3D / Gel) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
+        "text": "389. ぷっくり (Puffy 3D / Gel) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 387,
+          "index": 389,
           "presetId": "te_367",
           "group": "emphasis",
           "phase": "hold",
@@ -418,11 +418,11 @@
         "id": "mo14_26",
         "start": 75,
         "end": 78,
-        "text": "388. クレイ (Claymation / Plasticine) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "text": "390. クレイ (Claymation / Plasticine) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 388,
+          "index": 390,
           "presetId": "te_368",
           "group": "emphasis",
           "phase": "hold",
@@ -433,12 +433,27 @@
         "id": "mo14_27",
         "start": 78,
         "end": 81,
-        "text": "389. ペーパークラフト (Papercraft Cutout) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "391. ペーパークラフト (Papercraft Cutout) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 389,
+          "index": 391,
           "presetId": "te_369",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo14_28",
+        "start": 81,
+        "end": 84,
+        "text": "392. 刺繍 (Stitched Embroidery) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "14",
+          "index": 392,
+          "presetId": "te_370",
           "group": "emphasis",
           "phase": "hold",
           "type": "breathing"
@@ -1677,6 +1692,50 @@
           "enabled": true
         }
       ]
+    },
+    "mo14_28": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo14_28",
+          "phase": "hold",
+          "type": "breathing",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amount": 0.015
+          },
+          "enabled": true
+        }
+      ]
     }
   },
   "beatKindStyle": {
@@ -1758,9 +1817,9 @@
         "index": 1,
         "start": 0,
         "end": 1.7693761814744802,
-        "text": "363. ブレンドモード合成 (Blend Mode\nComposite) · opacityPulse [min:0.",
+        "text": "365. ブレンドモード合成 (Blend Mode\nComposite) · opacityPulse [min:0.",
         "lines": [
-          "363. ブレンドモード合成 (Blend Mode",
+          "365. ブレンドモード合成 (Blend Mode",
           "Composite) · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
@@ -1790,9 +1849,9 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "364. HUD風 (Sci-Fi HUD) · sway [angle\n:2 speed:1.2]あいうえお Aiueo 0123",
+        "text": "366. HUD風 (Sci-Fi HUD) · sway [angle\n:2 speed:1.2]あいうえお Aiueo 0123",
         "lines": [
-          "364. HUD風 (Sci-Fi HUD) · sway [angle",
+          "366. HUD風 (Sci-Fi HUD) · sway [angle",
           ":2 speed:1.2]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8799999999999999,
@@ -1807,9 +1866,9 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "365. SFインターフェース (Sci-Fi Interface\n) · drift [vx:0.02]あいうえお Aiueo 0123",
+        "text": "367. SFインターフェース (Sci-Fi Interface\n) · drift [vx:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "365. SFインターフェース (Sci-Fi Interface",
+          "367. SFインターフェース (Sci-Fi Interface",
           ") · drift [vx:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -1824,9 +1883,9 @@
         "index": 1,
         "start": 9,
         "end": 10.202970297029703,
-        "text": "366. ターミナル風 (Terminal Console)",
+        "text": "368. ターミナル風 (Terminal Console)",
         "lines": [
-          "366. ターミナル風 (Terminal Console)"
+          "368. ターミナル風 (Terminal Console)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1855,9 +1914,9 @@
         "index": 0,
         "start": 12,
         "end": 15,
-        "text": "367. マトリックス (Matrix Rain) · drift\n[vx:0 vy:0.15]あいうえお Aiueo 0123",
+        "text": "369. マトリックス (Matrix Rain) · drift\n[vx:0 vy:0.15]あいうえお Aiueo 0123",
         "lines": [
-          "367. マトリックス (Matrix Rain) · drift",
+          "369. マトリックス (Matrix Rain) · drift",
           "[vx:0 vy:0.15]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8599999999999999,
@@ -1872,9 +1931,9 @@
         "index": 0,
         "start": 15,
         "end": 18,
-        "text": "368. コードレイン (Code Rain) · drift\n[vx:0 vy:0.12]あいうえお Aiueo 0123",
+        "text": "370. コードレイン (Code Rain) · drift\n[vx:0 vy:0.12]あいうえお Aiueo 0123",
         "lines": [
-          "368. コードレイン (Code Rain) · drift",
+          "370. コードレイン (Code Rain) · drift",
           "[vx:0 vy:0.12]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8999999999999999,
@@ -1889,9 +1948,9 @@
         "index": 1,
         "start": 18,
         "end": 19.707889125799575,
-        "text": "369. ロード中表示 (Loading State)\n · opacityPulse [min:0.",
+        "text": "371. ロード中表示 (Loading State)\n · opacityPulse [min:0.",
         "lines": [
-          "369. ロード中表示 (Loading State)",
+          "371. ロード中表示 (Loading State)",
           " · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
@@ -1921,9 +1980,9 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "370. テープ貼り (Washi Tape) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "372. テープ貼り (Washi Tape) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "370. テープ貼り (Washi Tape) · breathing",
+          "372. テープ貼り (Washi Tape) · breathing",
           "[amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -1938,9 +1997,9 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "371. ラベル (Tag Label) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
+        "text": "373. ラベル (Tag Label) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
         "lines": [
-          "371. ラベル (Tag Label) · breathing",
+          "373. ラベル (Tag Label) · breathing",
           "[amount:0.025]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.94,
@@ -1955,9 +2014,9 @@
         "index": 1,
         "start": 27,
         "end": 28.65033407572383,
-        "text": "372. カラーバー (Color Bars)\n · opacityPulse [min:0.",
+        "text": "374. カラーバー (Color Bars)\n · opacityPulse [min:0.",
         "lines": [
-          "372. カラーバー (Color Bars)",
+          "374. カラーバー (Color Bars)",
           " · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
@@ -1987,9 +2046,9 @@
         "index": 1,
         "start": 30,
         "end": 31.249443207126948,
-        "text": "373. インク滲み (Ink Bleed) · wobbleWarp",
+        "text": "375. インク滲み (Ink Bleed) · wobbleWarp",
         "lines": [
-          "373. インク滲み (Ink Bleed) · wobbleWarp"
+          "375. インク滲み (Ink Bleed) · wobbleWarp"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2018,9 +2077,9 @@
         "index": 0,
         "start": 33,
         "end": 36,
-        "text": "374. 水彩 (Watercolor Bleed) · wobbleWarp\n[scale:3 speed:0.4]あいうえお Aiueo 0123",
+        "text": "376. 水彩 (Watercolor Bleed) · wobbleWarp\n[scale:3 speed:0.4]あいうえお Aiueo 0123",
         "lines": [
-          "374. 水彩 (Watercolor Bleed) · wobbleWarp",
+          "376. 水彩 (Watercolor Bleed) · wobbleWarp",
           "[scale:3 speed:0.4]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2035,9 +2094,9 @@
         "index": 1,
         "start": 36,
         "end": 37.17201935767708,
-        "text": "375. 墨流し (Suminagashi Marbling)",
+        "text": "377. 墨流し (Suminagashi Marbling)",
         "lines": [
-          "375. 墨流し (Suminagashi Marbling)"
+          "377. 墨流し (Suminagashi Marbling)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2066,9 +2125,9 @@
         "index": 0,
         "start": 39,
         "end": 42,
-        "text": "376. かすれ (Dry Brush Distress) ·\nshiver [amount:0.5]あいうえお Aiueo 0123",
+        "text": "378. かすれ (Dry Brush Distress) ·\nshiver [amount:0.5]あいうえお Aiueo 0123",
         "lines": [
-          "376. かすれ (Dry Brush Distress) ·",
+          "378. かすれ (Dry Brush Distress) ·",
           "shiver [amount:0.5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -2083,9 +2142,9 @@
         "index": 1,
         "start": 42,
         "end": 43.143767060964514,
-        "text": "377. グランジ (Grunge Distress)",
+        "text": "379. グランジ (Grunge Distress)",
         "lines": [
-          "377. グランジ (Grunge Distress)"
+          "379. グランジ (Grunge Distress)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2114,9 +2173,9 @@
         "index": 0,
         "start": 45,
         "end": 48,
-        "text": "378. エイジング (Vintage Aging) · shiver\n[interval:3.5]あいうえお Aiueo 0123",
+        "text": "380. エイジング (Vintage Aging) · shiver\n[interval:3.5]あいうえお Aiueo 0123",
         "lines": [
-          "378. エイジング (Vintage Aging) · shiver",
+          "380. エイジング (Vintage Aging) · shiver",
           "[interval:3.5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -2131,9 +2190,9 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "379. 石 (Stone Carving) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "381. 石 (Stone Carving) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "379. 石 (Stone Carving) · breathing",
+          "381. 石 (Stone Carving) · breathing",
           "[amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.9199999999999999,
@@ -2148,9 +2207,9 @@
         "index": 0,
         "start": 51,
         "end": 54,
-        "text": "380. 金属 (Metallic Surface) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
+        "text": "382. 金属 (Metallic Surface) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
         "lines": [
-          "380. 金属 (Metallic Surface) · breathing",
+          "382. 金属 (Metallic Surface) · breathing",
           "[amount:0.025]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -2165,9 +2224,9 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "381. クローム (Liquid Chrome) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "383. クローム (Liquid Chrome) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "381. クローム (Liquid Chrome) · breathing",
+          "383. クローム (Liquid Chrome) · breathing",
           "[amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2182,9 +2241,9 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "382. ゴールド (Metallic Gold) ·\nbreathingあいうえお Aiueo 0123",
+        "text": "384. ゴールド (Metallic Gold) ·\nbreathingあいうえお Aiueo 0123",
         "lines": [
-          "382. ゴールド (Metallic Gold) ·",
+          "384. ゴールド (Metallic Gold) ·",
           "breathingあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2199,9 +2258,9 @@
         "index": 0,
         "start": 60,
         "end": 63,
-        "text": "383. ガラス (Frosted Glass) · breathing\n[amount:0.015]あいうえお Aiueo 0123",
+        "text": "385. ガラス (Frosted Glass) · breathing\n[amount:0.015]あいうえお Aiueo 0123",
         "lines": [
-          "383. ガラス (Frosted Glass) · breathing",
+          "385. ガラス (Frosted Glass) · breathing",
           "[amount:0.015]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8399999999999999,
@@ -2216,9 +2275,9 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "384. 氷 (Frost & Ice) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "386. 氷 (Frost & Ice) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "384. 氷 (Frost & Ice) · breathing",
+          "386. 氷 (Frost & Ice) · breathing",
           "[amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.98,
@@ -2233,9 +2292,9 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "385. 凍結 (Freeze Over) · shiver [amount\n:0.3 interval:5]あいうえお Aiueo 0123",
+        "text": "387. 凍結 (Freeze Over) · shiver [amount\n:0.3 interval:5]あいうえお Aiueo 0123",
         "lines": [
-          "385. 凍結 (Freeze Over) · shiver [amount",
+          "387. 凍結 (Freeze Over) · shiver [amount",
           ":0.3 interval:5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -2250,9 +2309,9 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "386. バルーン (Inflatable Balloon) ·\njelly [freq:1.5]あいうえお Aiueo 0123",
+        "text": "388. バルーン (Inflatable Balloon) ·\njelly [freq:1.5]あいうえお Aiueo 0123",
         "lines": [
-          "386. バルーン (Inflatable Balloon) ·",
+          "388. バルーン (Inflatable Balloon) ·",
           "jelly [freq:1.5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8999999999999999,
@@ -2267,9 +2326,9 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "387. ぷっくり (Puffy 3D / Gel) · jelly [\namount:0.18 freq:1]あいうえお Aiueo 0123",
+        "text": "389. ぷっくり (Puffy 3D / Gel) · jelly [\namount:0.18 freq:1]あいうえお Aiueo 0123",
         "lines": [
-          "387. ぷっくり (Puffy 3D / Gel) · jelly [",
+          "389. ぷっくり (Puffy 3D / Gel) · jelly [",
           "amount:0.18 freq:1]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -2284,9 +2343,9 @@
         "index": 1,
         "start": 75,
         "end": 76.31884057971014,
-        "text": "388. クレイ (Claymation / Plasticine)",
+        "text": "390. クレイ (Claymation / Plasticine)",
         "lines": [
-          "388. クレイ (Claymation / Plasticine)"
+          "390. クレイ (Claymation / Plasticine)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2315,9 +2374,9 @@
         "index": 1,
         "start": 78,
         "end": 79.31435643564356,
-        "text": "389. ペーパークラフト (Papercraft Cutout)",
+        "text": "391. ペーパークラフト (Papercraft Cutout)",
         "lines": [
-          "389. ペーパークラフト (Papercraft Cutout)"
+          "391. ペーパークラフト (Papercraft Cutout)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2332,6 +2391,37 @@
         "text": " · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "lines": [
           " · breathing [amount:0.02]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo14_28": [
+      {
+        "id": "mo14_28:page1",
+        "cueId": "mo14_28",
+        "kind": "page",
+        "index": 1,
+        "start": 81,
+        "end": 82.2107969151671,
+        "text": "392. 刺繍 (Stitched Embroidery)",
+        "lines": [
+          "392. 刺繍 (Stitched Embroidery)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo14_28:page2",
+        "cueId": "mo14_28",
+        "kind": "page",
+        "index": 2,
+        "start": 82.2107969151671,
+        "end": 84,
+        "text": " · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.015]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,

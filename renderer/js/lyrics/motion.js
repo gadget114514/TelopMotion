@@ -1724,6 +1724,7 @@
     { id: 'bulletHolesIn', nameJa: '弾痕イン', nameEn: 'Bullet Holes In', group: 'entrance', phase: 'enter', type: 'bulletHoles', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { count: 3, recoil: 0.3, dust: 0.5 } },
     { id: 'particlesOnTextIn', nameJa: '文字上にパーティクルイン', nameEn: 'Particles on Text In', group: 'entrance', phase: 'enter', type: 'particlesOnText', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { count: 24, spread: 0.4, speed: 1.0 } },
     { id: 'checkerboardIn', nameJa: 'チェッカーボードイン', nameEn: 'Checkerboard In', group: 'entrance', phase: 'enter', type: 'checkerboard', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { cells: 4, soft: 0.05 } },
+    { id: 'fontMirrorIn', nameJa: 'フォントミラーイン', nameEn: 'Font Mirror In', group: 'entrance', phase: 'enter', type: 'fontMirror', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: { dir: 'down', distance: 0.25, fade: true } },
     { id: 'pulse', nameJa: 'パルス', nameEn: 'Pulse', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'opacityPulse', nameJa: '点滅', nameEn: 'Blink', group: 'emphasis', phase: 'hold', type: 'opacityPulse', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: {} },
     { id: 'growShrink', nameJa: '伸縮', nameEn: 'Grow Shrink', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.2, duration: 1.6, ease: 'linear', params: { amount: 0.18, bpm: 90 } },
@@ -1737,6 +1738,7 @@
     { id: 'wave', nameJa: 'ウェーブ', nameEn: 'Wave', group: 'emphasis', phase: 'hold', type: 'sineWave', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'pendulumLoop', nameJa: '振り子スイング', nameEn: 'Pendulum Swing', group: 'emphasis', phase: 'hold', type: 'pendulumSwing', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: { angle: 18, speed: 0.8, length: 0.1 } },
     { id: 'nudgeLoop', nameJa: 'ナッジ揺れ', nameEn: 'Nudge Impulse', group: 'emphasis', phase: 'hold', type: 'nudgeImpulse', from: 'start', delay: 0.2, duration: 1.2, ease: 'linear', params: { amount: 0.04, interval: 2.0 } },
+    { id: 'fontMirrorHold', nameJa: 'フォントミラー保持', nameEn: 'Font Mirror Hold', group: 'emphasis', phase: 'hold', type: 'fontMirror', from: 'start', delay: 0, duration: 1.6, ease: 'linear', params: { dir: 'down', mode: 'flip', amount: 0.2, speed: 1.0 } },
     { id: 'fadeOut', nameJa: 'フェードアウト', nameEn: 'Fade Out', group: 'exit', phase: 'exit', type: 'fade', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: {} },
     { id: 'flyOut', nameJa: 'フライアウト', nameEn: 'Fly Out', group: 'exit', phase: 'exit', type: 'slide', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: { dir: 'down', distance: 0.3 } },
     { id: 'zoomOut', nameJa: 'ズームアウト', nameEn: 'Zoom Out', group: 'exit', phase: 'exit', type: 'zoomOut', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: {} },
@@ -1754,6 +1756,7 @@
     { id: 'bulletHolesOut', nameJa: '弾痕アウト', nameEn: 'Bullet Holes Out', group: 'exit', phase: 'exit', type: 'bulletHoles', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { count: 3, recoil: 0.3, dust: 0.5 } },
     { id: 'particlesOnTextOut', nameJa: '文字上にパーティクルアウト', nameEn: 'Particles on Text Out', group: 'exit', phase: 'exit', type: 'particlesOnText', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { count: 24, spread: 0.4, speed: 1.0 } },
     { id: 'checkerboardOut', nameJa: 'チェッカーボードアウト', nameEn: 'Checkerboard Out', group: 'exit', phase: 'exit', type: 'checkerboard', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { cells: 4, soft: 0.05 } },
+    { id: 'fontMirrorOut', nameJa: 'フォントミラーアウト', nameEn: 'Font Mirror Out', group: 'exit', phase: 'exit', type: 'fontMirror', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: { dir: 'down', distance: 0.25, fade: true } },
     // The shader pack (renderer/js/lyrics/effects/shader-fx.js). Each family is
     // available in all three phases, so every one of them can be picked here and
     // then reshaped with any ADSR phase and any easing curve.

@@ -790,5 +790,80 @@
     },
   });
 
+  fx.register({
+    group: 'hold',
+    type: 'fontMirror',
+    tags: ['basic', 'font'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['down', 'up', 'left', 'right'], default: 'down', random: 'any' },
+      { key: 'mode', kind: 'select', options: ['flip', 'reflection', 'bounce'], default: 'flip' },
+      { key: 'amount', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, random: [0.1, 0.4] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 1.0 },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      if (env <= 0.0001) return;
+      const dir = (params && params.dir) || 'down';
+      const mode = (params && params.mode) || 'flip';
+      const amount = (params && params.amount == null ? 0.2 : Number(params.amount)) * env;
+      const speed = params && params.speed == null ? 1.0 : Number(params.speed);
+      const shortSide = info && info.shortSide ? info.shortSide : 1080;
+      const idx = info && info.i != null ? info.i : 0;
+      const phase = TAU * speed * h + idx * 0.25;
+
+      if (mode === 'flip') {
+        const s = Math.cos(phase);
+        const scaleFactor = 1 - (1 - s) * amount;
+        const shift = amount * shortSide * 0.08 * Math.sin(phase);
+        if (dir === 'down') {
+          state.scaleY *= scaleFactor;
+          state.y += shift;
+        } else if (dir === 'up') {
+          state.scaleY *= scaleFactor;
+          state.y -= shift;
+        } else if (dir === 'left') {
+          state.scaleX *= scaleFactor;
+          state.x -= shift;
+        } else if (dir === 'right') {
+          state.scaleX *= scaleFactor;
+          state.x += shift;
+        }
+      } else if (mode === 'reflection') {
+        const s = Math.abs(Math.sin(phase));
+        const scaleFactor = 1 - amount * s;
+        const shift = amount * shortSide * 0.12 * s;
+        if (dir === 'down') {
+          state.scaleY *= scaleFactor;
+          state.y += shift;
+        } else if (dir === 'up') {
+          state.scaleY *= scaleFactor;
+          state.y -= shift;
+        } else if (dir === 'left') {
+          state.scaleX *= scaleFactor;
+          state.x -= shift;
+        } else if (dir === 'right') {
+          state.scaleX *= scaleFactor;
+          state.x += shift;
+        }
+      } else if (mode === 'bounce') {
+        const s = Math.abs(Math.sin(phase));
+        const scaleFactor = 1 - 2 * amount * s;
+        const shift = amount * shortSide * 0.15 * s;
+        if (dir === 'down') {
+          state.scaleY *= scaleFactor;
+          state.y += shift;
+        } else if (dir === 'up') {
+          state.scaleY *= scaleFactor;
+          state.y -= shift;
+        } else if (dir === 'left') {
+          state.scaleX *= scaleFactor;
+          state.x -= shift;
+        } else if (dir === 'right') {
+          state.scaleX *= scaleFactor;
+          state.x += shift;
+        }
+      }
+    },
+  });
+
   return fx;
 });
