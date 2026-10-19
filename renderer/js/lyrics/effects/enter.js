@@ -1756,6 +1756,11 @@
       state.scaleX *= Math.max(0.001, scale);
       state.scaleY *= Math.max(0.001, scale);
       state.opacity *= Math.min(1, t * 2);
+    },
+  });
+
+  fx.register({
+    group: 'enter',
     type: 'splitFontIn',
     tags: ['lively', 'deform'],
     params: [
