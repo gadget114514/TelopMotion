@@ -34,11 +34,11 @@
       rubberIn: 'Rubber in', chromaIn: 'Chroma in', multiIn: 'Multi in', leanIn: 'Lean in',
       tiltSettleIn: 'Tilt settle in', shakeIn: 'Shake in', circleIn: 'Circle in', circleBurstIn: 'Circle burst in',
       varyDeformIn: 'Vary deform in', blinkVaryIn: 'Vary blink in', twistIn: 'Twist in', spinPartIn: 'Part spin in',
-      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', splitFontIn: 'Split font in',
     },
     exit: {
       fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
-      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', splitFontOut: 'Split font out',
       pageCurl: 'Page curl',
       dissolve: 'Dissolve', wipe: 'Wipe', checkerboard: 'Checkerboard', typewriterReverse: 'Typewriter reverse', shrinkToCenter: 'Shrink to center',
       particlesDisperse: 'Particles disperse', melt: 'Melt', burnAway: 'Burn away', strokeErase: 'Stroke erase', circleErase: 'Circle erase', lineErase: 'Line erase', boxErase: 'Box erase',
@@ -159,7 +159,7 @@
       top: 'Top', bottom: 'Bottom',
       tl: 'Top left', t: 'Top', tr: 'Top right', l: 'Left', c: 'Center', r: 'Right', bl: 'Bottom left', b: 'Bottom', br: 'Bottom right', baseline: 'Baseline',
       stack: 'Stack', converge: 'Converge', forward: 'Forward', in: 'In', inOut: 'In and out',
-      show: 'Show', dim: 'Dim', z: 'Z',
+      show: 'Show', dim: 'Dim', z: 'Z', topBottom: 'Top / bottom', leftRight: 'Left / right',
     },
   };
 
@@ -189,11 +189,11 @@
       rubberIn: 'ゴムイン', chromaIn: '色ずれイン', multiIn: '複数並びイン', leanIn: '傾きイン',
       tiltSettleIn: '出て傾く', shakeIn: '震えイン', circleIn: '中央円イン', circleBurstIn: '円＋放射イン',
       varyDeformIn: '文字ごと変形イン', blinkVaryIn: '文字ごと点滅', twistIn: 'ねじれ・もどし', spinPartIn: '部分回転イン',
-      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', splitFontIn: 'フォント分割入場',
     },
     exit: {
       fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
-      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', splitFontOut: 'フォント分割退場',
       pageCurl: 'ページめくり',
       gravityFall: '重力落下', dissolve: 'ディゾルブ', wipe: 'ワイプ', checkerboard: 'チェッカーボード', typewriterReverse: 'タイプライター逆再生',
       shrinkToCenter: '中心へ収縮', particlesDisperse: 'パーティクル拡散', melt: '溶解', burnAway: '燃え尽き',
@@ -314,7 +314,7 @@
       top: '上', bottom: '下',
       tl: '左上', t: '上', tr: '右上', l: '左', c: '中央', r: '右', bl: '左下', b: '下', br: '右下', baseline: 'ベースライン',
       stack: '積み重ね', converge: '収束', forward: '正転', in: 'イン', inOut: 'イン・アウト',
-      show: '表示', dim: '減光', z: 'Z',
+      show: '表示', dim: '減衰', z: 'Z軸', topBottom: '上下', leftRight: '左右',
     },
   };
 
@@ -345,11 +345,11 @@
       rubberIn: 'Goma', chromaIn: 'Desfase de color', multiIn: 'Múltiple', leanIn: 'Inclinación',
       tiltSettleIn: 'Inclinación final', shakeIn: 'Sacudida', circleIn: 'Círculo central', circleBurstIn: 'Círculo y ráfaga',
       varyDeformIn: 'Deformación variada', blinkVaryIn: 'Parpadeo variado', twistIn: 'Torsión', spinPartIn: 'Giro parcial',
-      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', splitFontIn: 'Entrada de fuente dividida',
     },
     exit: {
       fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
-      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', splitFontOut: 'Salida de fuente dividida',
       pageCurl: 'Rizo de página',
       gravityFall: 'Caída por gravedad', dissolve: 'Disolución', wipe: 'Barrido', checkerboard: 'Damero', typewriterReverse: 'Máquina de escribir inversa',
       shrinkToCenter: 'Encoger al centro', particlesDisperse: 'Dispersión de partículas', melt: 'Derretir',
@@ -478,7 +478,7 @@
       top: 'Arriba', bottom: 'Abajo',
       tl: 'Arriba izq.', t: 'Arriba', tr: 'Arriba der.', l: 'Izquierda', c: 'Centro', r: 'Derecha', bl: 'Abajo izq.', b: 'Abajo', br: 'Abajo der.', baseline: 'Línea base',
       stack: 'Pila', converge: 'Convergencia', forward: 'Adelante', in: 'Entrada', inOut: 'Entrada y salida',
-      show: 'Mostrar', dim: 'Atenuado', z: 'Z',
+      show: 'Mostrar', dim: 'Atenuar', z: 'Z', topBottom: 'Arriba / abajo', leftRight: 'Izquierda / derecha',
     },
   };
 
@@ -508,11 +508,11 @@
       rubberIn: 'Caoutchouc', chromaIn: 'Décalage chroma', multiIn: 'Multiple', leanIn: 'Inclinaison',
       tiltSettleIn: 'Inclinaison finale', shakeIn: 'Secousse', circleIn: 'Cercle central', circleBurstIn: 'Cercle et rafale',
       varyDeformIn: 'Déformation variée', blinkVaryIn: 'Clignotement varié', twistIn: 'Torsion', spinPartIn: 'Rotation partielle',
-      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', splitFontIn: 'Entrée police divisée',
     },
     exit: {
       fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
-      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', splitFontOut: 'Sortie police divisée',
       pageCurl: 'Page cornée',
       gravityFall: 'Chute gravitaire', dissolve: 'Dissolution', wipe: 'Balayage', checkerboard: 'Damier', typewriterReverse: 'Machine à écrire inversée',
       shrinkToCenter: 'Rétrécir au centre', particlesDisperse: 'Dispersion de particules', melt: 'Fonte', burnAway: 'Combustion',
@@ -641,7 +641,7 @@
       top: 'Haut', bottom: 'Bas',
       tl: 'Haut gauche', t: 'Haut', tr: 'Haut droite', l: 'Gauche', c: 'Centre', r: 'Droite', bl: 'Bas gauche', b: 'Bas', br: 'Bas droite', baseline: 'Ligne de base',
       stack: 'Pile', converge: 'Convergence', forward: 'Avant', in: 'Entrée', inOut: 'Entrée et sortie',
-      show: 'Afficher', dim: 'Atténué', z: 'Z',
+      show: 'Afficher', dim: 'Atténuer', z: 'Z', topBottom: 'Haut / bas', leftRight: 'Gauche / droite',
     },
   };
 
@@ -671,11 +671,11 @@
       rubberIn: 'Резина', chromaIn: 'Сдвиг цвета', multiIn: 'Несколько', leanIn: 'Наклон',
       tiltSettleIn: 'Наклон в конце', shakeIn: 'Тряска', circleIn: 'Центральный круг', circleBurstIn: 'Круг и вспышка',
       varyDeformIn: 'Разная деформация', blinkVaryIn: 'Разное мигание', twistIn: 'Скручивание', spinPartIn: 'Частичный поворот',
-      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', splitFontIn: 'Разделение шрифта (вход)',
     },
     exit: {
       fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
-      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', splitFontOut: 'Разделение шрифта (выход)',
       pageCurl: 'Загиб страницы',
       gravityFall: 'Падение', dissolve: 'Диссолюция', wipe: 'Шторка', checkerboard: 'Шахматная доска', typewriterReverse: 'Печатная машинка наоборот',
       shrinkToCenter: 'Сжатие к центру', particlesDisperse: 'Разлёт частиц', melt: 'Таяние', burnAway: 'Выгорание',
@@ -803,7 +803,7 @@
       top: 'Сверху', bottom: 'Снизу',
       tl: 'Слева сверху', t: 'Сверху', tr: 'Справа сверху', l: 'Слева', c: 'Центр', r: 'Справа', bl: 'Слева снизу', b: 'Снизу', br: 'Справа снизу', baseline: 'Базовая линия',
       stack: 'Стопка', converge: 'Схождение', forward: 'Вперёд', in: 'Вход', inOut: 'Вход и выход',
-      show: 'Показать', dim: 'Приглушить', z: 'Z',
+      show: 'Показать', dim: 'Затемнить', z: 'Z', topBottom: 'Сверху / снизу', leftRight: 'Слева / справа',
     },
   };
 
