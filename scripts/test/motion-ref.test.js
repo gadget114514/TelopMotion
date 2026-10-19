@@ -257,6 +257,34 @@ test('checkerboard enter and exit effects exist and function properly', () => {
   assert.ok(lateOut.scaleX < 1 && lateOut.scaleY < 1, 'checkerboard exit shrinks letters mid-wipe');
 });
 
+test('speechBubble enter and exit effects exist and function properly', () => {
+  const speechEnter = fx.get('enter', 'speechBubble');
+  assert.ok(speechEnter, 'speechBubble enter effect registered');
+  assert.ok(speechEnter.companion && speechEnter.companion.ornShape, 'speechBubble enter has companion ornShape');
+  assert.equal(speechEnter.companion.ornShape.type, 'bubble');
+
+  const stateInStart = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechEnter.cpu(stateInStart, 0.0, { popLead: 0.2, popScale: 0.5 });
+  assert.equal(stateInStart.opacity, 0, 'speechBubble enter opacity is 0 at start lead');
+
+  const stateInEnd = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechEnter.cpu(stateInEnd, 1.0, { popLead: 0.2, popScale: 0.5 });
+  assert.equal(stateInEnd.opacity, 1, 'speechBubble enter opacity is 1 at p=1');
+
+  const speechExit = fx.get('exit', 'speechBubble');
+  assert.ok(speechExit, 'speechBubble exit effect registered');
+  assert.ok(speechExit.companion && speechExit.companion.ornShape, 'speechBubble exit has companion ornShape');
+  assert.equal(speechExit.companion.ornShape.type, 'bubble');
+
+  const stateOutStart = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechExit.cpu(stateOutStart, 0.0, { shrinkScale: 0.3 });
+  assert.equal(stateOutStart.opacity, 1, 'speechBubble exit opacity is 1 at p=0');
+
+  const stateOutEnd = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechExit.cpu(stateOutEnd, 1.0, { shrinkScale: 0.3 });
+  assert.equal(stateOutEnd.opacity, 0, 'speechBubble exit opacity is 0 at p=1');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
@@ -273,12 +301,14 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('bulletHolesIn'), 'bulletHolesIn preset');
   assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
   assert.ok(ids.has('checkerboardIn'), 'checkerboardIn preset');
+  assert.ok(ids.has('speechBubbleIn'), 'speechBubbleIn preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
   assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');
   assert.ok(ids.has('bulletHolesOut'), 'bulletHolesOut preset');
   assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
   assert.ok(ids.has('checkerboardOut'), 'checkerboardOut preset');
+  assert.ok(ids.has('speechBubbleOut'), 'speechBubbleOut preset');
 });
 
 test('splitFontIn and splitFontOut enter and exit effects exist and function properly', () => {

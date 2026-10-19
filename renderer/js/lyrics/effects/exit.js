@@ -761,6 +761,24 @@
 
   fx.register({
     group: 'exit',
+    type: 'speechBubble',
+    tags: ['decor', 'basic'],
+    params: [
+      { key: 'tail', kind: 'select', options: ['right', 'left', 'top', 'bottom'], default: 'bottom' },
+      { key: 'body', kind: 'select', options: ['oval', 'square', 'rounded', 'cloud'], default: 'oval' },
+      { key: 'shrinkScale', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.3 },
+    ],
+    companion: {
+      ornShape: { type: 'bubble', params: { tail: 'bottom', body: 'oval' } },
+      ornMotion: { type: 'pop', params: { exit: 'shrink', exitDuration: 0.3 } },
+    },
+    cpu(state, p, params) {
+      const progress = clamp01(p);
+      const shrinkScale = params && params.shrinkScale != null ? Number(params.shrinkScale) : 0.3;
+      const scale = 1 + (shrinkScale - 1) * (progress * progress);
+      state.scaleX *= Math.max(0.001, scale);
+      state.scaleY *= Math.max(0.001, scale);
+      state.opacity *= Math.max(0, 1 - progress * 1.2);
     type: 'splitFontOut',
     tags: ['lively', 'deform'],
     params: [

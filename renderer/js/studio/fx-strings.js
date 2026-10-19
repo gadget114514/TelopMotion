@@ -34,6 +34,11 @@
       rubberIn: 'Rubber in', chromaIn: 'Chroma in', multiIn: 'Multi in', leanIn: 'Lean in',
       tiltSettleIn: 'Tilt settle in', shakeIn: 'Shake in', circleIn: 'Circle in', circleBurstIn: 'Circle burst in',
       varyDeformIn: 'Vary deform in', blinkVaryIn: 'Vary blink in', twistIn: 'Twist in', spinPartIn: 'Part spin in',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', speechBubble: 'Speech bubble',
+    },
+    exit: {
+      fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', speechBubble: 'Speech bubble',
       bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', splitFontIn: 'Split font in',
     },
     exit: {
@@ -134,6 +139,7 @@
       scaleOrigin: 'Scale origin', scaleOriginAnchor: 'Scale origin anchor', scaleOriginOffset: 'Scale origin offset',
       drawOrder: 'Draw order', curlAngle: 'Curl angle', linePosition: 'Line position', endAngle: 'End angle',
       randomSpeed: 'Random speed', randomPivot: 'Random pivot', recoil: 'Recoil',
+      popLead: 'Pop lead', popScale: 'Pop scale', shrinkScale: 'Shrink scale',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -189,6 +195,11 @@
       rubberIn: 'ゴムイン', chromaIn: '色ずれイン', multiIn: '複数並びイン', leanIn: '傾きイン',
       tiltSettleIn: '出て傾く', shakeIn: '震えイン', circleIn: '中央円イン', circleBurstIn: '円＋放射イン',
       varyDeformIn: '文字ごと変形イン', blinkVaryIn: '文字ごと点滅', twistIn: 'ねじれ・もどし', spinPartIn: '部分回転イン',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', speechBubble: '吹き出しイン',
+    },
+    exit: {
+      fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', speechBubble: '吹き出しアウト',
       bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', splitFontIn: 'フォント分割入場',
     },
     exit: {
@@ -289,6 +300,7 @@
       scaleOrigin: '拡縮の原点', scaleOriginAnchor: '拡縮の原点位置', scaleOriginOffset: '拡縮の原点微調整',
       drawOrder: '描画順', curlAngle: 'めくり角度', linePosition: '線の位置', endAngle: '終了角度',
       randomSpeed: 'ランダム速度', randomPivot: 'ランダム原点', recoil: '反動',
+      popLead: 'ポップ先行', popScale: 'ポップスケール', shrinkScale: '縮小スケール',
     },
     value: {
       alternate: '交互', arc: '円弧', 'center-out': '中央から外へ', center: '中央', circle: '円', contain: '収める', corners: '四隅',
@@ -345,6 +357,11 @@
       rubberIn: 'Goma', chromaIn: 'Desfase de color', multiIn: 'Múltiple', leanIn: 'Inclinación',
       tiltSettleIn: 'Inclinación final', shakeIn: 'Sacudida', circleIn: 'Círculo central', circleBurstIn: 'Círculo y ráfaga',
       varyDeformIn: 'Deformación variada', blinkVaryIn: 'Parpadeo variado', twistIn: 'Torsión', spinPartIn: 'Giro parcial',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', speechBubble: 'Bocadillo',
+    },
+    exit: {
+      fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', speechBubble: 'Bocadillo',
       bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', splitFontIn: 'Entrada de fuente dividida',
     },
     exit: {
@@ -452,6 +469,7 @@
       scaleOrigin: 'Origen de escala', scaleOriginAnchor: 'Anclaje de escala', scaleOriginOffset: 'Ajuste de escala',
       drawOrder: 'Orden de dibujo', curlAngle: 'Ángulo de rizo', linePosition: 'Posición de línea', endAngle: 'Ángulo final',
       randomSpeed: 'Velocidad aleatoria', randomPivot: 'Pivote aleatorio', recoil: 'Retroceso',
+      popLead: 'Anticipación pop', popScale: 'Escala pop', shrinkScale: 'Escala de encogido',
     },
     value: {
       alternate: 'Alterno', arc: 'Arco', 'center-out': 'Del centro hacia fuera', center: 'Centro', circle: 'Círculo', contain: 'Contener',
@@ -508,6 +526,11 @@
       rubberIn: 'Caoutchouc', chromaIn: 'Décalage chroma', multiIn: 'Multiple', leanIn: 'Inclinaison',
       tiltSettleIn: 'Inclinaison finale', shakeIn: 'Secousse', circleIn: 'Cercle central', circleBurstIn: 'Cercle et rafale',
       varyDeformIn: 'Déformation variée', blinkVaryIn: 'Clignotement varié', twistIn: 'Torsion', spinPartIn: 'Rotation partielle',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', speechBubble: 'Bulle de BD',
+    },
+    exit: {
+      fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', speechBubble: 'Bulle de BD',
       bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', splitFontIn: 'Entrée police divisée',
     },
     exit: {
@@ -615,6 +638,7 @@
       scaleOrigin: 'Origine d’échelle', scaleOriginAnchor: 'Ancrage d’échelle', scaleOriginOffset: 'Ajustement d’échelle',
       drawOrder: 'Ordre de tracé', curlAngle: 'Angle d’enroulement', linePosition: 'Position de ligne', endAngle: 'Angle de fin',
       randomSpeed: 'Vitesse aléatoire', randomPivot: 'Pivot aléatoire', recoil: 'Recul',
+      popLead: 'Avance pop', popScale: 'Échelle pop', shrinkScale: 'Échelle de rétrécissement',
     },
     value: {
       alternate: 'Alterné', arc: 'Arc', 'center-out': 'Du centre vers l’extérieur', center: 'Centre', circle: 'Cercle', contain: 'Contenir',
@@ -671,6 +695,11 @@
       rubberIn: 'Резина', chromaIn: 'Сдвиг цвета', multiIn: 'Несколько', leanIn: 'Наклон',
       tiltSettleIn: 'Наклон в конце', shakeIn: 'Тряска', circleIn: 'Центральный круг', circleBurstIn: 'Круг и вспышка',
       varyDeformIn: 'Разная деформация', blinkVaryIn: 'Разное мигание', twistIn: 'Скручивание', spinPartIn: 'Частичный поворот',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', speechBubble: 'Облачко речи',
+    },
+    exit: {
+      fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', speechBubble: 'Облачко речи',
       bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', splitFontIn: 'Разделение шрифта (вход)',
     },
     exit: {
@@ -777,6 +806,7 @@
       scaleOrigin: 'Опора масштаба', scaleOriginAnchor: 'Точка опоры масштаба', scaleOriginOffset: 'Подстройка опоры масштаба',
       drawOrder: 'Порядок отрисовки', curlAngle: 'Угол загиба', linePosition: 'Позиция линии', endAngle: 'Конечный угол',
       randomSpeed: 'Случайная скорость', randomPivot: 'Случайная опора', recoil: 'Отдача',
+      popLead: 'Опережение всплытия', popScale: 'Масштаб всплытия', shrinkScale: 'Масштаб сжатия',
     },
     value: {
       alternate: 'Поочерёдно', arc: 'Дуга', 'center-out': 'Из центра наружу', center: 'Центр', circle: 'Круг', contain: 'Вписать',

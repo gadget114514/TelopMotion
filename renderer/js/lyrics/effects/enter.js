@@ -1732,6 +1732,30 @@
 
   fx.register({
     group: 'enter',
+    type: 'speechBubble',
+    tags: ['decor', 'basic'],
+    params: [
+      { key: 'tail', kind: 'select', options: ['right', 'left', 'top', 'bottom'], default: 'bottom' },
+      { key: 'body', kind: 'select', options: ['oval', 'square', 'rounded', 'cloud'], default: 'oval' },
+      { key: 'popLead', kind: 'number', min: 0, max: 0.6, step: 0.01, default: 0.2 },
+      { key: 'popScale', kind: 'number', min: 0.1, max: 1.5, step: 0.05, default: 0.5 },
+    ],
+    companion: {
+      ornShape: { type: 'bubble', params: { tail: 'bottom', body: 'oval' } },
+      ornMotion: { type: 'pop', params: { overshoot: 0.2 } },
+    },
+    cpu(state, p, params) {
+      const lead = params && params.popLead != null ? Number(params.popLead) : 0.2;
+      const popScale = params && params.popScale != null ? Number(params.popScale) : 0.5;
+      const progress = clamp01(p);
+      const t = clamp01((progress - lead) / Math.max(0.001, 1 - lead));
+      const s = 1.2;
+      const v = t - 1;
+      const easeOutBack = 1 + (s + 1) * v * v * v + s * v * v;
+      const scale = popScale + (1 - popScale) * easeOutBack;
+      state.scaleX *= Math.max(0.001, scale);
+      state.scaleY *= Math.max(0.001, scale);
+      state.opacity *= Math.min(1, t * 2);
     type: 'splitFontIn',
     tags: ['lively', 'deform'],
     params: [
