@@ -1026,6 +1026,7 @@ body {
   background: rgba(11, 13, 18, 0.92);
   border: 1px dashed var(--line);
   border-radius: 12px;
+  z-index: 10;
 }
 
 .welcome[hidden] {
