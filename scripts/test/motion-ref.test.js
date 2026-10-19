@@ -55,7 +55,21 @@ test('Motion Reference pageCurl exit effect exists and functions properly', () =
   assert.equal(stateCurlExit1.opacity, 0, 'pageCurl exit fully hidden at p=1');
 });
 
-test('Motion Reference new hold effects exist and function properly', () => {
+test('Motion Reference pendulum enter, exit, hold effects exist and function properly', () => {
+  const pendulumIn = fx.get('enter', 'pendulumSwing');
+  assert.ok(pendulumIn, 'pendulumSwing enter effect registered');
+  const statePenIn = { x: 0, y: 0, rot: 0, opacity: 1 };
+  pendulumIn.cpu(statePenIn, 0.0, { angle: 25, speed: 1.0, length: 0.1 }, () => 0.5, { shortSide: 1000 });
+  assert.notEqual(statePenIn.rot, 0, 'pendulum enter starts with initial rotation');
+  assert.equal(statePenIn.opacity, 0, 'pendulum enter starts hidden at p=0');
+
+  const pendulumOut = fx.get('exit', 'pendulumSwing');
+  assert.ok(pendulumOut, 'pendulumSwing exit effect registered');
+  const statePenOut = { x: 0, y: 0, rot: 0, opacity: 1 };
+  pendulumOut.cpu(statePenOut, 0.5, { angle: 25, speed: 1.0, length: 0.1 }, () => 0.5, { shortSide: 1000 });
+  assert.notEqual(statePenOut.rot, 0, 'pendulum exit rotates mid-progress');
+  assert.equal(statePenOut.opacity, 0.5, 'pendulum exit fades opacity at p=0.5');
+
   const pendulum = fx.get('hold', 'pendulumSwing');
   assert.ok(pendulum, 'pendulumSwing hold effect registered');
   const statePen = { x: 0, y: 0, rot: 0 };
@@ -301,6 +315,7 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('bulletHolesIn'), 'bulletHolesIn preset');
   assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
   assert.ok(ids.has('checkerboardIn'), 'checkerboardIn preset');
+  assert.ok(ids.has('pendulumIn'), 'pendulumIn preset');
   assert.ok(ids.has('speechBubbleIn'), 'speechBubbleIn preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
@@ -308,6 +323,7 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('bulletHolesOut'), 'bulletHolesOut preset');
   assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
   assert.ok(ids.has('checkerboardOut'), 'checkerboardOut preset');
+  assert.ok(ids.has('pendulumOut'), 'pendulumOut preset');
   assert.ok(ids.has('speechBubbleOut'), 'speechBubbleOut preset');
 });
 

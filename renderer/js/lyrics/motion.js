@@ -1724,6 +1724,7 @@
     { id: 'bulletHolesIn', nameJa: '弾痕イン', nameEn: 'Bullet Holes In', group: 'entrance', phase: 'enter', type: 'bulletHoles', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { count: 3, recoil: 0.3, dust: 0.5 } },
     { id: 'particlesOnTextIn', nameJa: '文字上にパーティクルイン', nameEn: 'Particles on Text In', group: 'entrance', phase: 'enter', type: 'particlesOnText', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { count: 24, spread: 0.4, speed: 1.0 } },
     { id: 'checkerboardIn', nameJa: 'チェッカーボードイン', nameEn: 'Checkerboard In', group: 'entrance', phase: 'enter', type: 'checkerboard', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { cells: 4, soft: 0.05 } },
+    { id: 'pendulumIn', nameJa: '振り子イン', nameEn: 'Pendulum In', group: 'entrance', phase: 'enter', type: 'pendulumSwing', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { angle: 25, speed: 1.0, length: 0.1 } },
     { id: 'speechBubbleIn', nameJa: '吹き出しイン', nameEn: 'Speech Bubble In', group: 'entrance', phase: 'enter', type: 'speechBubble', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { tail: 'bottom', body: 'oval', popLead: 0.2, popScale: 0.5 } },
     { id: 'pulse', nameJa: 'パルス', nameEn: 'Pulse', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'opacityPulse', nameJa: '点滅', nameEn: 'Blink', group: 'emphasis', phase: 'hold', type: 'opacityPulse', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: {} },
@@ -1755,6 +1756,7 @@
     { id: 'bulletHolesOut', nameJa: '弾痕アウト', nameEn: 'Bullet Holes Out', group: 'exit', phase: 'exit', type: 'bulletHoles', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { count: 3, recoil: 0.3, dust: 0.5 } },
     { id: 'particlesOnTextOut', nameJa: '文字上にパーティクルアウト', nameEn: 'Particles on Text Out', group: 'exit', phase: 'exit', type: 'particlesOnText', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { count: 24, spread: 0.4, speed: 1.0 } },
     { id: 'checkerboardOut', nameJa: 'チェッカーボードアウト', nameEn: 'Checkerboard Out', group: 'exit', phase: 'exit', type: 'checkerboard', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { cells: 4, soft: 0.05 } },
+    { id: 'pendulumOut', nameJa: '振り子アウト', nameEn: 'Pendulum Out', group: 'exit', phase: 'exit', type: 'pendulumSwing', from: 'end', delay: -0.7, duration: 0.7, ease: 'easeInCubic', params: { angle: 25, speed: 1.0, length: 0.1 } },
     { id: 'speechBubbleOut', nameJa: '吹き出しアウト', nameEn: 'Speech Bubble Out', group: 'exit', phase: 'exit', type: 'speechBubble', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { tail: 'bottom', body: 'oval', shrinkScale: 0.3 } },
     // The shader pack (renderer/js/lyrics/effects/shader-fx.js). Each family is
     // available in all three phases, so every one of them can be picked here and

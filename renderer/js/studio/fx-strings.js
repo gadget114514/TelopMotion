@@ -34,6 +34,11 @@
       rubberIn: 'Rubber in', chromaIn: 'Chroma in', multiIn: 'Multi in', leanIn: 'Lean in',
       tiltSettleIn: 'Tilt settle in', shakeIn: 'Shake in', circleIn: 'Circle in', circleBurstIn: 'Circle burst in',
       varyDeformIn: 'Vary deform in', blinkVaryIn: 'Vary blink in', twistIn: 'Twist in', spinPartIn: 'Part spin in',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', pendulumSwing: 'Pendulum swing',
+    },
+    exit: {
+      fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', pendulumSwing: 'Pendulum swing',
       bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', speechBubble: 'Speech bubble',
     },
     exit: {
@@ -195,6 +200,11 @@
       rubberIn: 'ゴムイン', chromaIn: '色ずれイン', multiIn: '複数並びイン', leanIn: '傾きイン',
       tiltSettleIn: '出て傾く', shakeIn: '震えイン', circleIn: '中央円イン', circleBurstIn: '円＋放射イン',
       varyDeformIn: '文字ごと変形イン', blinkVaryIn: '文字ごと点滅', twistIn: 'ねじれ・もどし', spinPartIn: '部分回転イン',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', pendulumSwing: '振り子揺れ',
+    },
+    exit: {
+      fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', pendulumSwing: '振り子揺れ',
       bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', speechBubble: '吹き出しイン',
     },
     exit: {
@@ -357,6 +367,11 @@
       rubberIn: 'Goma', chromaIn: 'Desfase de color', multiIn: 'Múltiple', leanIn: 'Inclinación',
       tiltSettleIn: 'Inclinación final', shakeIn: 'Sacudida', circleIn: 'Círculo central', circleBurstIn: 'Círculo y ráfaga',
       varyDeformIn: 'Deformación variada', blinkVaryIn: 'Parpadeo variado', twistIn: 'Torsión', spinPartIn: 'Giro parcial',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', pendulumSwing: 'Oscilación de péndulo',
+    },
+    exit: {
+      fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', pendulumSwing: 'Oscilación de péndulo',
       bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', speechBubble: 'Bocadillo',
     },
     exit: {
@@ -526,6 +541,11 @@
       rubberIn: 'Caoutchouc', chromaIn: 'Décalage chroma', multiIn: 'Multiple', leanIn: 'Inclinaison',
       tiltSettleIn: 'Inclinaison finale', shakeIn: 'Secousse', circleIn: 'Cercle central', circleBurstIn: 'Cercle et rafale',
       varyDeformIn: 'Déformation variée', blinkVaryIn: 'Clignotement varié', twistIn: 'Torsion', spinPartIn: 'Rotation partielle',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', pendulumSwing: 'Balancier de pendule',
+    },
+    exit: {
+      fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', pendulumSwing: 'Balancier de pendule',
       bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', speechBubble: 'Bulle de BD',
     },
     exit: {
@@ -695,6 +715,11 @@
       rubberIn: 'Резина', chromaIn: 'Сдвиг цвета', multiIn: 'Несколько', leanIn: 'Наклон',
       tiltSettleIn: 'Наклон в конце', shakeIn: 'Тряска', circleIn: 'Центральный круг', circleBurstIn: 'Круг и вспышка',
       varyDeformIn: 'Разная деформация', blinkVaryIn: 'Разное мигание', twistIn: 'Скручивание', spinPartIn: 'Частичный поворот',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', pendulumSwing: 'Раскачивание маятника',
+    },
+    exit: {
+      fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', pendulumSwing: 'Раскачивание маятника',
       bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', speechBubble: 'Облачко речи',
     },
     exit: {
