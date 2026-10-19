@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../easing'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx);
+    factory(root.SA.fx, root.SA.easing);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx) {
+})(typeof self !== 'undefined' ? self : this, function (fx, easing) {
   'use strict';
 
   function clamp01(value) {
@@ -779,6 +779,67 @@
       state.x += length * Math.sin(rad);
       state.y += length * (1 - Math.cos(rad));
       state.opacity *= Math.max(0, 1 - progress);
+    type: 'speechBubble',
+    tags: ['decor', 'basic'],
+    params: [
+      { key: 'tail', kind: 'select', options: ['right', 'left', 'top', 'bottom'], default: 'bottom' },
+      { key: 'body', kind: 'select', options: ['oval', 'square', 'rounded', 'cloud'], default: 'oval' },
+      { key: 'shrinkScale', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.3 },
+    ],
+    companion: {
+      ornShape: { type: 'bubble', params: { tail: 'bottom', body: 'oval' } },
+      ornMotion: { type: 'pop', params: { exit: 'shrink', exitDuration: 0.3 } },
+    },
+    cpu(state, p, params) {
+      const progress = clamp01(p);
+      const shrinkScale = params && params.shrinkScale != null ? Number(params.shrinkScale) : 0.3;
+      const scale = 1 + (shrinkScale - 1) * (progress * progress);
+      state.scaleX *= Math.max(0.001, scale);
+      state.scaleY *= Math.max(0.001, scale);
+      state.opacity *= Math.max(0, 1 - progress * 1.2);
+    type: 'splitFontOut',
+    tags: ['lively', 'deform'],
+    params: [
+      { key: 'mode', kind: 'select', options: ['topBottom', 'leftRight'], default: 'topBottom' },
+      { key: 'shift', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, unit: 'frame' },
+      { key: 'delay', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.1 },
+      { key: 'reverse', kind: 'bool', default: false },
+      { key: 'fade', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params, rng, info) {
+      const shortSide = (info && info.shortSide) ? info.shortSide : 1080;
+      const mode = (params && params.mode) || 'topBottom';
+      const shift = (params && params.shift != null ? Number(params.shift) : 0.2) * shortSide;
+      const delay = params && params.delay != null ? Number(params.delay) : 0.1;
+      const rev = !!(params && params.reverse);
+      const fade = !(params && params.fade === false);
+
+      let isSecondHalf = false;
+      if (mode === 'topBottom') {
+        const dy = info && Number.isFinite(info.letterY) && info.blockCenter ? info.letterY - info.blockCenter.y : 0;
+        isSecondHalf = dy >= 0;
+      } else {
+        const dx = info && Number.isFinite(info.letterX) && info.blockCenter ? info.letterX - info.blockCenter.x : 0;
+        isSecondHalf = dx >= 0;
+      }
+
+      const halfDelay = isSecondHalf ? (rev ? 0 : delay) : (rev ? delay : 0);
+      const effectiveP = clamp01((clamp01(p) - halfDelay) / Math.max(0.001, 1 - delay));
+      const cubicIn = (easing && easing.get) ? easing.get('cubicIn') : ((u) => u * u * u);
+      const k = cubicIn(effectiveP);
+
+      const sign = isSecondHalf ? 1 : -1;
+      const dirSign = rev ? -sign : sign;
+
+      if (mode === 'topBottom') {
+        state.y += dirSign * shift * k;
+      } else {
+        state.x += dirSign * shift * k;
+      }
+
+      if (fade) {
+        state.opacity *= Math.max(0, 1 - effectiveP);
+      }
     },
   });
 

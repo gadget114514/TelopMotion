@@ -39,6 +39,16 @@
     exit: {
       fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
       bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', pendulumSwing: 'Pendulum swing',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', speechBubble: 'Speech bubble',
+    },
+    exit: {
+      fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', speechBubble: 'Speech bubble',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', splitFontIn: 'Split font in',
+    },
+    exit: {
+      fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
+      bulletHoles: 'Bullet holes', particlesOnText: 'Particles on text', splitFontOut: 'Split font out',
       pageCurl: 'Page curl',
       dissolve: 'Dissolve', wipe: 'Wipe', checkerboard: 'Checkerboard', typewriterReverse: 'Typewriter reverse', shrinkToCenter: 'Shrink to center',
       particlesDisperse: 'Particles disperse', melt: 'Melt', burnAway: 'Burn away', strokeErase: 'Stroke erase', circleErase: 'Circle erase', lineErase: 'Line erase', boxErase: 'Box erase',
@@ -134,6 +144,7 @@
       scaleOrigin: 'Scale origin', scaleOriginAnchor: 'Scale origin anchor', scaleOriginOffset: 'Scale origin offset',
       drawOrder: 'Draw order', curlAngle: 'Curl angle', linePosition: 'Line position', endAngle: 'End angle',
       randomSpeed: 'Random speed', randomPivot: 'Random pivot', recoil: 'Recoil',
+      popLead: 'Pop lead', popScale: 'Pop scale', shrinkScale: 'Shrink scale',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -159,7 +170,7 @@
       top: 'Top', bottom: 'Bottom',
       tl: 'Top left', t: 'Top', tr: 'Top right', l: 'Left', c: 'Center', r: 'Right', bl: 'Bottom left', b: 'Bottom', br: 'Bottom right', baseline: 'Baseline',
       stack: 'Stack', converge: 'Converge', forward: 'Forward', in: 'In', inOut: 'In and out',
-      show: 'Show', dim: 'Dim', z: 'Z',
+      show: 'Show', dim: 'Dim', z: 'Z', topBottom: 'Top / bottom', leftRight: 'Left / right',
     },
   };
 
@@ -194,6 +205,16 @@
     exit: {
       fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
       bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', pendulumSwing: '振り子揺れ',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', speechBubble: '吹き出しイン',
+    },
+    exit: {
+      fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', speechBubble: '吹き出しアウト',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', splitFontIn: 'フォント分割入場',
+    },
+    exit: {
+      fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
+      bulletHoles: '弾痕', particlesOnText: '文字上にパーティクル', splitFontOut: 'フォント分割退場',
       pageCurl: 'ページめくり',
       gravityFall: '重力落下', dissolve: 'ディゾルブ', wipe: 'ワイプ', checkerboard: 'チェッカーボード', typewriterReverse: 'タイプライター逆再生',
       shrinkToCenter: '中心へ収縮', particlesDisperse: 'パーティクル拡散', melt: '溶解', burnAway: '燃え尽き',
@@ -289,6 +310,7 @@
       scaleOrigin: '拡縮の原点', scaleOriginAnchor: '拡縮の原点位置', scaleOriginOffset: '拡縮の原点微調整',
       drawOrder: '描画順', curlAngle: 'めくり角度', linePosition: '線の位置', endAngle: '終了角度',
       randomSpeed: 'ランダム速度', randomPivot: 'ランダム原点', recoil: '反動',
+      popLead: 'ポップ先行', popScale: 'ポップスケール', shrinkScale: '縮小スケール',
     },
     value: {
       alternate: '交互', arc: '円弧', 'center-out': '中央から外へ', center: '中央', circle: '円', contain: '収める', corners: '四隅',
@@ -314,7 +336,7 @@
       top: '上', bottom: '下',
       tl: '左上', t: '上', tr: '右上', l: '左', c: '中央', r: '右', bl: '左下', b: '下', br: '右下', baseline: 'ベースライン',
       stack: '積み重ね', converge: '収束', forward: '正転', in: 'イン', inOut: 'イン・アウト',
-      show: '表示', dim: '減光', z: 'Z',
+      show: '表示', dim: '減衰', z: 'Z軸', topBottom: '上下', leftRight: '左右',
     },
   };
 
@@ -350,6 +372,16 @@
     exit: {
       fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
       bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', pendulumSwing: 'Oscilación de péndulo',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', speechBubble: 'Bocadillo',
+    },
+    exit: {
+      fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', speechBubble: 'Bocadillo',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', splitFontIn: 'Entrada de fuente dividida',
+    },
+    exit: {
+      fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
+      bulletHoles: 'Impactos de bala', particlesOnText: 'Partículas sobre texto', splitFontOut: 'Salida de fuente dividida',
       pageCurl: 'Rizo de página',
       gravityFall: 'Caída por gravedad', dissolve: 'Disolución', wipe: 'Barrido', checkerboard: 'Damero', typewriterReverse: 'Máquina de escribir inversa',
       shrinkToCenter: 'Encoger al centro', particlesDisperse: 'Dispersión de partículas', melt: 'Derretir',
@@ -452,6 +484,7 @@
       scaleOrigin: 'Origen de escala', scaleOriginAnchor: 'Anclaje de escala', scaleOriginOffset: 'Ajuste de escala',
       drawOrder: 'Orden de dibujo', curlAngle: 'Ángulo de rizo', linePosition: 'Posición de línea', endAngle: 'Ángulo final',
       randomSpeed: 'Velocidad aleatoria', randomPivot: 'Pivote aleatorio', recoil: 'Retroceso',
+      popLead: 'Anticipación pop', popScale: 'Escala pop', shrinkScale: 'Escala de encogido',
     },
     value: {
       alternate: 'Alterno', arc: 'Arco', 'center-out': 'Del centro hacia fuera', center: 'Centro', circle: 'Círculo', contain: 'Contener',
@@ -478,7 +511,7 @@
       top: 'Arriba', bottom: 'Abajo',
       tl: 'Arriba izq.', t: 'Arriba', tr: 'Arriba der.', l: 'Izquierda', c: 'Centro', r: 'Derecha', bl: 'Abajo izq.', b: 'Abajo', br: 'Abajo der.', baseline: 'Línea base',
       stack: 'Pila', converge: 'Convergencia', forward: 'Adelante', in: 'Entrada', inOut: 'Entrada y salida',
-      show: 'Mostrar', dim: 'Atenuado', z: 'Z',
+      show: 'Mostrar', dim: 'Atenuar', z: 'Z', topBottom: 'Arriba / abajo', leftRight: 'Izquierda / derecha',
     },
   };
 
@@ -513,6 +546,16 @@
     exit: {
       fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
       bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', pendulumSwing: 'Balancier de pendule',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', speechBubble: 'Bulle de BD',
+    },
+    exit: {
+      fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', speechBubble: 'Bulle de BD',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', splitFontIn: 'Entrée police divisée',
+    },
+    exit: {
+      fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
+      bulletHoles: 'Impacts de balle', particlesOnText: 'Particules sur le texte', splitFontOut: 'Sortie police divisée',
       pageCurl: 'Page cornée',
       gravityFall: 'Chute gravitaire', dissolve: 'Dissolution', wipe: 'Balayage', checkerboard: 'Damier', typewriterReverse: 'Machine à écrire inversée',
       shrinkToCenter: 'Rétrécir au centre', particlesDisperse: 'Dispersion de particules', melt: 'Fonte', burnAway: 'Combustion',
@@ -615,6 +658,7 @@
       scaleOrigin: 'Origine d’échelle', scaleOriginAnchor: 'Ancrage d’échelle', scaleOriginOffset: 'Ajustement d’échelle',
       drawOrder: 'Ordre de tracé', curlAngle: 'Angle d’enroulement', linePosition: 'Position de ligne', endAngle: 'Angle de fin',
       randomSpeed: 'Vitesse aléatoire', randomPivot: 'Pivot aléatoire', recoil: 'Recul',
+      popLead: 'Avance pop', popScale: 'Échelle pop', shrinkScale: 'Échelle de rétrécissement',
     },
     value: {
       alternate: 'Alterné', arc: 'Arc', 'center-out': 'Du centre vers l’extérieur', center: 'Centre', circle: 'Cercle', contain: 'Contenir',
@@ -641,7 +685,7 @@
       top: 'Haut', bottom: 'Bas',
       tl: 'Haut gauche', t: 'Haut', tr: 'Haut droite', l: 'Gauche', c: 'Centre', r: 'Droite', bl: 'Bas gauche', b: 'Bas', br: 'Bas droite', baseline: 'Ligne de base',
       stack: 'Pile', converge: 'Convergence', forward: 'Avant', in: 'Entrée', inOut: 'Entrée et sortie',
-      show: 'Afficher', dim: 'Atténué', z: 'Z',
+      show: 'Afficher', dim: 'Atténuer', z: 'Z', topBottom: 'Haut / bas', leftRight: 'Gauche / droite',
     },
   };
 
@@ -676,6 +720,16 @@
     exit: {
       fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
       bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', pendulumSwing: 'Раскачивание маятника',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', speechBubble: 'Облачко речи',
+    },
+    exit: {
+      fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', speechBubble: 'Облачко речи',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', splitFontIn: 'Разделение шрифта (вход)',
+    },
+    exit: {
+      fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
+      bulletHoles: 'Пулевые отверстия', particlesOnText: 'Частицы на тексте', splitFontOut: 'Разделение шрифта (выход)',
       pageCurl: 'Загиб страницы',
       gravityFall: 'Падение', dissolve: 'Диссолюция', wipe: 'Шторка', checkerboard: 'Шахматная доска', typewriterReverse: 'Печатная машинка наоборот',
       shrinkToCenter: 'Сжатие к центру', particlesDisperse: 'Разлёт частиц', melt: 'Таяние', burnAway: 'Выгорание',
@@ -777,6 +831,7 @@
       scaleOrigin: 'Опора масштаба', scaleOriginAnchor: 'Точка опоры масштаба', scaleOriginOffset: 'Подстройка опоры масштаба',
       drawOrder: 'Порядок отрисовки', curlAngle: 'Угол загиба', linePosition: 'Позиция линии', endAngle: 'Конечный угол',
       randomSpeed: 'Случайная скорость', randomPivot: 'Случайная опора', recoil: 'Отдача',
+      popLead: 'Опережение всплытия', popScale: 'Масштаб всплытия', shrinkScale: 'Масштаб сжатия',
     },
     value: {
       alternate: 'Поочерёдно', arc: 'Дуга', 'center-out': 'Из центра наружу', center: 'Центр', circle: 'Круг', contain: 'Вписать',
@@ -803,7 +858,7 @@
       top: 'Сверху', bottom: 'Снизу',
       tl: 'Слева сверху', t: 'Сверху', tr: 'Справа сверху', l: 'Слева', c: 'Центр', r: 'Справа', bl: 'Слева снизу', b: 'Снизу', br: 'Справа снизу', baseline: 'Базовая линия',
       stack: 'Стопка', converge: 'Схождение', forward: 'Вперёд', in: 'Вход', inOut: 'Вход и выход',
-      show: 'Показать', dim: 'Приглушить', z: 'Z',
+      show: 'Показать', dim: 'Затемнить', z: 'Z', topBottom: 'Сверху / снизу', leftRight: 'Слева / справа',
     },
   };
 

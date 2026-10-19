@@ -1751,6 +1751,72 @@
       state.x += length * Math.sin(rad);
       state.y += length * (1 - Math.cos(rad));
       state.opacity *= Math.min(1, progress * 2);
+    type: 'speechBubble',
+    tags: ['decor', 'basic'],
+    params: [
+      { key: 'tail', kind: 'select', options: ['right', 'left', 'top', 'bottom'], default: 'bottom' },
+      { key: 'body', kind: 'select', options: ['oval', 'square', 'rounded', 'cloud'], default: 'oval' },
+      { key: 'popLead', kind: 'number', min: 0, max: 0.6, step: 0.01, default: 0.2 },
+      { key: 'popScale', kind: 'number', min: 0.1, max: 1.5, step: 0.05, default: 0.5 },
+    ],
+    companion: {
+      ornShape: { type: 'bubble', params: { tail: 'bottom', body: 'oval' } },
+      ornMotion: { type: 'pop', params: { overshoot: 0.2 } },
+    },
+    cpu(state, p, params) {
+      const lead = params && params.popLead != null ? Number(params.popLead) : 0.2;
+      const popScale = params && params.popScale != null ? Number(params.popScale) : 0.5;
+      const progress = clamp01(p);
+      const t = clamp01((progress - lead) / Math.max(0.001, 1 - lead));
+      const s = 1.2;
+      const v = t - 1;
+      const easeOutBack = 1 + (s + 1) * v * v * v + s * v * v;
+      const scale = popScale + (1 - popScale) * easeOutBack;
+      state.scaleX *= Math.max(0.001, scale);
+      state.scaleY *= Math.max(0.001, scale);
+      state.opacity *= Math.min(1, t * 2);
+    type: 'splitFontIn',
+    tags: ['lively', 'deform'],
+    params: [
+      { key: 'mode', kind: 'select', options: ['topBottom', 'leftRight'], default: 'topBottom' },
+      { key: 'shift', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, unit: 'frame' },
+      { key: 'delay', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.1 },
+      { key: 'reverse', kind: 'bool', default: false },
+      { key: 'fade', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params, rng, info) {
+      const shortSide = (info && info.shortSide) ? info.shortSide : 1080;
+      const mode = (params && params.mode) || 'topBottom';
+      const shift = (params && params.shift != null ? Number(params.shift) : 0.2) * shortSide;
+      const delay = params && params.delay != null ? Number(params.delay) : 0.1;
+      const rev = !!(params && params.reverse);
+      const fade = !(params && params.fade === false);
+
+      let isSecondHalf = false;
+      if (mode === 'topBottom') {
+        const dy = info && Number.isFinite(info.letterY) && info.blockCenter ? info.letterY - info.blockCenter.y : 0;
+        isSecondHalf = dy >= 0;
+      } else {
+        const dx = info && Number.isFinite(info.letterX) && info.blockCenter ? info.letterX - info.blockCenter.x : 0;
+        isSecondHalf = dx >= 0;
+      }
+
+      const halfDelay = isSecondHalf ? (rev ? 0 : delay) : (rev ? delay : 0);
+      const effectiveP = clamp01((clamp01(p) - halfDelay) / Math.max(0.001, 1 - delay));
+      const k = 1 - easing.get('cubicOut')(effectiveP);
+
+      const sign = isSecondHalf ? 1 : -1;
+      const dirSign = rev ? -sign : sign;
+
+      if (mode === 'topBottom') {
+        state.y += dirSign * shift * k;
+      } else {
+        state.x += dirSign * shift * k;
+      }
+
+      if (fade) {
+        state.opacity *= clamp01(effectiveP * 1.5);
+      }
     },
   });
 

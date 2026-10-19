@@ -271,6 +271,34 @@ test('checkerboard enter and exit effects exist and function properly', () => {
   assert.ok(lateOut.scaleX < 1 && lateOut.scaleY < 1, 'checkerboard exit shrinks letters mid-wipe');
 });
 
+test('speechBubble enter and exit effects exist and function properly', () => {
+  const speechEnter = fx.get('enter', 'speechBubble');
+  assert.ok(speechEnter, 'speechBubble enter effect registered');
+  assert.ok(speechEnter.companion && speechEnter.companion.ornShape, 'speechBubble enter has companion ornShape');
+  assert.equal(speechEnter.companion.ornShape.type, 'bubble');
+
+  const stateInStart = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechEnter.cpu(stateInStart, 0.0, { popLead: 0.2, popScale: 0.5 });
+  assert.equal(stateInStart.opacity, 0, 'speechBubble enter opacity is 0 at start lead');
+
+  const stateInEnd = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechEnter.cpu(stateInEnd, 1.0, { popLead: 0.2, popScale: 0.5 });
+  assert.equal(stateInEnd.opacity, 1, 'speechBubble enter opacity is 1 at p=1');
+
+  const speechExit = fx.get('exit', 'speechBubble');
+  assert.ok(speechExit, 'speechBubble exit effect registered');
+  assert.ok(speechExit.companion && speechExit.companion.ornShape, 'speechBubble exit has companion ornShape');
+  assert.equal(speechExit.companion.ornShape.type, 'bubble');
+
+  const stateOutStart = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechExit.cpu(stateOutStart, 0.0, { shrinkScale: 0.3 });
+  assert.equal(stateOutStart.opacity, 1, 'speechBubble exit opacity is 1 at p=0');
+
+  const stateOutEnd = { scaleX: 1, scaleY: 1, opacity: 1 };
+  speechExit.cpu(stateOutEnd, 1.0, { shrinkScale: 0.3 });
+  assert.equal(stateOutEnd.opacity, 0, 'speechBubble exit opacity is 0 at p=1');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
@@ -288,6 +316,7 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
   assert.ok(ids.has('checkerboardIn'), 'checkerboardIn preset');
   assert.ok(ids.has('pendulumIn'), 'pendulumIn preset');
+  assert.ok(ids.has('speechBubbleIn'), 'speechBubbleIn preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
   assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');
@@ -295,4 +324,46 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
   assert.ok(ids.has('checkerboardOut'), 'checkerboardOut preset');
   assert.ok(ids.has('pendulumOut'), 'pendulumOut preset');
+  assert.ok(ids.has('speechBubbleOut'), 'speechBubbleOut preset');
+});
+
+test('splitFontIn and splitFontOut enter and exit effects exist and function properly', () => {
+  const splitIn = fx.get('enter', 'splitFontIn');
+  assert.ok(splitIn, 'splitFontIn enter effect registered');
+
+  const stateTopIn = { x: 0, y: 0, opacity: 1 };
+  splitIn.cpu(stateTopIn, 0.0, { mode: 'topBottom', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterY: 400,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateTopIn.y < 0, `splitFontIn top half moves up: y=${stateTopIn.y}`);
+
+  const stateBottomIn = { x: 0, y: 0, opacity: 1 };
+  splitIn.cpu(stateBottomIn, 0.0, { mode: 'topBottom', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterY: 600,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateBottomIn.y > 0, `splitFontIn bottom half moves down: y=${stateBottomIn.y}`);
+
+  const stateLeftIn = { x: 0, y: 0, opacity: 1 };
+  splitIn.cpu(stateLeftIn, 0.0, { mode: 'leftRight', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterX: 300,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateLeftIn.x < 0, `splitFontIn left half moves left: x=${stateLeftIn.x}`);
+
+  const splitOut = fx.get('exit', 'splitFontOut');
+  assert.ok(splitOut, 'splitFontOut exit effect registered');
+
+  const stateTopOut = { x: 0, y: 0, opacity: 1 };
+  splitOut.cpu(stateTopOut, 1.0, { mode: 'topBottom', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterY: 400,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateTopOut.y < 0, `splitFontOut top half splits upwards at p=1: y=${stateTopOut.y}`);
+  assert.equal(stateTopOut.opacity, 0, 'splitFontOut top half fades out at p=1');
 });
