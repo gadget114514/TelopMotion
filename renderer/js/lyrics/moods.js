@@ -2266,6 +2266,7 @@
     const result = Array.isArray(base) ? [...base] : { ...(base || {}) };
     if (!patch || typeof patch !== 'object' || Array.isArray(patch)) return patch === undefined ? result : patch;
     for (const [key, value] of Object.entries(patch)) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
       if (value && typeof value === 'object' && !Array.isArray(value) && result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])) {
         result[key] = mergePatch(result[key], value);
       } else {
@@ -3113,5 +3114,6 @@
     clipSpec,
     bend,
     score: scoreEntry,
+    mergePatch,
   };
 });
