@@ -51,6 +51,7 @@
     for (const patch of patches) {
       if (!isPlainObject(patch)) continue;
       for (const [key, value] of Object.entries(patch)) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
         if (isPlainObject(value) && isPlainObject(result[key])) result[key] = mergeDeep(result[key], value);
         else result[key] = value;
       }
