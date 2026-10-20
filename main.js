@@ -4,7 +4,17 @@ const { app, BrowserWindow, ipcMain, dialog, shell, session, nativeImage, safeSt
 const fs = require('node:fs');
 const path = require('node:path');
 const SMOKE = !!process.env.SA_SMOKE;
-const SUNO_URL_RE = /^https:\/\/(?:www\.)?suno\.com\//i;
+
+function isSafeExternalUrl(urlStr) {
+  if (typeof urlStr !== 'string') return false;
+  try {
+    const parsed = new URL(urlStr);
+    return parsed.protocol === 'https:' &&
+           (parsed.hostname === 'suno.com' || parsed.hostname === 'www.suno.com');
+  } catch {
+    return false;
+  }
+}
 
 // Security limits (DoS / disk-fill hardening)
 const FILE_READ_MAX_BYTES = 200 * 1024 * 1024;
@@ -33,7 +43,7 @@ function isPackagedApp() {
 
 function applyWindowSecurity(win) {
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (SUNO_URL_RE.test(url)) shell.openExternal(url);
+    if (isSafeExternalUrl(url)) shell.openExternal(url);
     return { action: 'deny' };
   });
   win.webContents.on('will-navigate', (event, url) => {
@@ -50,7 +60,7 @@ function applyWindowSecurity(win) {
       /* fall through to deny */
     }
     event.preventDefault();
-    if (SUNO_URL_RE.test(url)) shell.openExternal(url);
+    if (isSafeExternalUrl(url)) shell.openExternal(url);
   });
   // Block webview attachment (defense-in-depth; webviewTag is disabled below).
   win.webContents.on('will-attach-webview', (event) => {
@@ -616,7 +626,7 @@ function registerIpc() {
 
   ipcMain.handle('app:open-external', (_event, payload) => {
     const url = payload && payload.url;
-    if (typeof url !== 'string' || !SUNO_URL_RE.test(url)) {
+    if (!isSafeExternalUrl(url)) {
       return fail(Object.assign(new Error('blocked-url'), { code: 'blocked-url' }));
     }
     shell.openExternal(url);
