@@ -645,3 +645,11 @@ test('autoRecapDraw is a stable 0..1 hash of the cue', () => {
   assert.notEqual(textflow.autoRecapDraw({ id: 'draw2', text: 'alpha' }), value);
 });
 
+
+test('resolveSettings ignores __proto__, constructor, and prototype to prevent prototype pollution', () => {
+  const maliciousPatch = JSON.parse('{"__proto__": {"polluted": true}, "constructor": {"prototype": {"polluted2": true}}}');
+  const result = textflow.resolveSettings(maliciousPatch);
+  assert.equal(({}).polluted, undefined, 'Object.prototype should not be polluted');
+  assert.equal(({}).polluted2, undefined, 'Object.prototype should not be polluted via constructor');
+  assert.equal(result.polluted, undefined, 'Result object should not have polluted property');
+});
