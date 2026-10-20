@@ -5,6 +5,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const SMOKE = !!process.env.SA_SMOKE;
 
+// Validates URLs securely to prevent hostname bypasses (e.g. suno.com.evil.com).
+// Replaces the insecure regex: /^https:\/\/(?:www\.)?suno\.com\//i
 function isSafeExternalUrl(urlStr) {
   if (typeof urlStr !== 'string') return false;
   try {
@@ -3354,3 +3356,5 @@ app.on('will-quit', () => {
   }
   streams.clear();
 });
+
+if (typeof module !== 'undefined' && process.env.NODE_ENV === 'test') { module.exports = { isSafeExternalUrl }; }
