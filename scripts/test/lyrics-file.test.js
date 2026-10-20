@@ -17,6 +17,11 @@ test('detect uses the extension first and sniffs the content otherwise', () => {
   assert.strictEqual(lyricsFile.detect('{"segments":[{"start":0,"end":1,"text":"x"}]}', 'song.txt'), 'json');
 });
 
+test('detect gracefully handles invalid JSON', () => {
+  assert.strictEqual(lyricsFile.detect('not json', 'wrong.json'), 'srt');
+  assert.strictEqual(lyricsFile.detect('[invalid]', 'wrong.json'), 'srt');
+});
+
 test('parse dispatches to the matching format', () => {
   const lrc = lyricsFile.parse(LRC, 'song.lrc');
   assert.strictEqual(lrc.format, 'lrc');
