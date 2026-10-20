@@ -144,6 +144,7 @@
     const result = Array.isArray(base) ? [...base] : { ...base };
     if (!isPlainObject(patch)) return patch === undefined ? result : patch;
     for (const [key, value] of Object.entries(patch)) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
       if (isPlainObject(value) && isPlainObject(result[key])) result[key] = mergeDeep(result[key], value);
       else result[key] = value;
     }

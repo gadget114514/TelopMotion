@@ -35,6 +35,14 @@ test('mergeDeep merges objects and replaces arrays', () => {
   assert.deepStrictEqual(merged, { a: { b: 1, c: 3 }, list: [9] });
 });
 
+test('mergeDeep prevents prototype pollution by ignoring unsafe keys', () => {
+  const patch = JSON.parse('{"__proto__":{"polluted":"yes"},"constructor":{"prototype":{"polluted2":"yes"}}}');
+  const merged = project.mergeDeep({}, patch);
+  assert.strictEqual({}.polluted, undefined);
+  assert.strictEqual({}.polluted2, undefined);
+  assert.deepStrictEqual(merged, {});
+});
+
 test('migrate fills missing fields, keeps unknown fields and bumps the version', () => {
   const raw = { format: 'telopmotion', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
   const result = project.migrate(raw);
