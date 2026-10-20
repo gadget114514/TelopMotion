@@ -237,6 +237,20 @@ async function fetchImageDataUrl(rawUrl) {
   return `data:${verified};base64,${buffer.toString('base64')}`;
 }
 
+function validateFilters(filters) {
+  if (!Array.isArray(filters)) return [{ name: 'All files', extensions: ['*'] }];
+
+  const valid = filters.filter(f =>
+    f &&
+    typeof f === 'object' &&
+    typeof f.name === 'string' &&
+    Array.isArray(f.extensions) &&
+    f.extensions.every(e => typeof e === 'string' && e.length > 0)
+  );
+
+  return valid.length > 0 ? valid : [{ name: 'All files', extensions: ['*'] }];
+}
+
 function registerIpc() {
   ipcMain.handle('file:open', async (event, payload) => {
     try {
@@ -244,7 +258,7 @@ function registerIpc() {
       const result = await dialog.showOpenDialog(owner, {
         title: (payload && payload.title) || 'Open file',
         properties: payload && payload.multiple ? ['openFile', 'multiSelections'] : ['openFile'],
-        filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
+        filters: validateFilters(payload && payload.filters),
       });
       if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
       const readBounded = async (filePath) => {
@@ -287,7 +301,7 @@ function registerIpc() {
       const result = await dialog.showSaveDialog(owner, {
         title: (payload && payload.title) || 'Save file',
         defaultPath: (payload && payload.defaultName) || 'file',
-        filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
+        filters: validateFilters(payload && payload.filters),
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
       await fs.promises.writeFile(result.filePath, out);
@@ -334,7 +348,7 @@ function registerIpc() {
       const result = await dialog.showSaveDialog(owner, {
         title: (payload && payload.title) || 'Export video',
         defaultPath: (payload && payload.defaultName) || 'video.mp4',
-        filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
+        filters: validateFilters(payload && payload.filters),
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
       const fd = fs.openSync(result.filePath, 'w');
