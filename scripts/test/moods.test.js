@@ -420,3 +420,19 @@ test('recolor moves every hex colour onto the new palette and keeps the rest', (
   // nothing to map from: a plain copy
   assert.deepEqual(moods.recolor(style, [], to), style);
 });
+
+test('mergePatch prevents prototype pollution', () => {
+  const base = { a: 1, b: { c: 2 } };
+  const payload = JSON.parse('{"__proto__": {"polluted": true}, "constructor": {"prototype": {"polluted": true}}, "prototype": {"polluted": true}, "b": {"d": 3}}');
+
+  const result = moods.mergePatch(base, payload);
+
+  assert.equal(result.a, 1);
+  assert.equal(result.b.c, 2);
+  assert.equal(result.b.d, 3);
+
+  // Verify Object.prototype was NOT polluted
+  assert.equal({}.polluted, undefined);
+  assert.equal(Object.prototype.polluted, undefined);
+  assert.equal(result.polluted, undefined);
+});
