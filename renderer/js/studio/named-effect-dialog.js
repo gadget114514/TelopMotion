@@ -30,12 +30,10 @@ SA.namedEffectDialog = (() => {
       .replace(/"/g, '&quot;');
   }
 
-  function highlightMatch(text, query) {
-    if (!text || !query) return escapeHtml(text || '');
+  function highlightMatch(text, queryRegex) {
+    if (!text || !queryRegex) return escapeHtml(text || '');
     const escapedText = escapeHtml(text);
-    const escapedQuery = escapeHtml(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escapedQuery})`, 'gi');
-    return escapedText.replace(regex, '<mark>$1</mark>');
+    return escapedText.replace(queryRegex, '<mark>$1</mark>');
   }
 
   function labelOf(entry) {
@@ -209,6 +207,13 @@ SA.namedEffectDialog = (() => {
     function renderList() {
       listContainer.innerHTML = '';
       const query = searchInput.value.trim();
+
+      let queryRegex = null;
+      if (query) {
+        const escapedQuery = escapeHtml(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        queryRegex = new RegExp(`(${escapedQuery})`, 'gi');
+      }
+
       const filtered = runtime.search(query, { pack: activePack });
       const current = currentNamed();
       clearBtn.hidden = !current;
@@ -235,7 +240,7 @@ SA.namedEffectDialog = (() => {
         nameWrap.className = 'motion-card-title-wrap';
         const nameEl = document.createElement('span');
         nameEl.className = 'motion-card-name';
-        nameEl.innerHTML = highlightMatch(labelOf(entry), query);
+        nameEl.innerHTML = highlightMatch(labelOf(entry), queryRegex);
         nameWrap.appendChild(nameEl);
 
         // the other language's name, so the two lookups agree
@@ -244,7 +249,7 @@ SA.namedEffectDialog = (() => {
         if (otherName && otherName !== textOf(entry.name)) {
           const subEl = document.createElement('span');
           subEl.className = 'motion-card-subname';
-          subEl.innerHTML = `(${highlightMatch(otherName, query)})`;
+          subEl.innerHTML = `(${highlightMatch(otherName, queryRegex)})`;
           nameWrap.appendChild(subEl);
         }
         top.appendChild(nameWrap);
@@ -270,7 +275,7 @@ SA.namedEffectDialog = (() => {
         if (meaning) {
           const descEl = document.createElement('div');
           descEl.className = 'motion-card-desc';
-          descEl.innerHTML = highlightMatch(meaning, query);
+          descEl.innerHTML = highlightMatch(meaning, queryRegex);
           card.appendChild(descEl);
         }
 

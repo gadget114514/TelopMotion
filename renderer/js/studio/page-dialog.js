@@ -16,12 +16,10 @@ SA.pageDialog = (() => {
       .replace(/"/g, '&quot;');
   }
 
-  function highlightMatch(text, query) {
-    if (!text || !query) return escapeHtml(text || '');
+  function highlightMatch(text, queryRegex) {
+    if (!text || !queryRegex) return escapeHtml(text || '');
     const escapedText = escapeHtml(text);
-    const escapedQuery = escapeHtml(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escapedQuery})`, 'gi');
-    return escapedText.replace(regex, '<mark>$1</mark>');
+    return escapedText.replace(queryRegex, '<mark>$1</mark>');
   }
 
   const CATEGORY_MAP = {
@@ -477,6 +475,13 @@ SA.pageDialog = (() => {
       const query = searchInput.value.trim().toLowerCase();
       const terms = query ? query.split(/\s+/).filter(Boolean) : [];
 
+      const rawQuery = searchInput.value.trim();
+      let queryRegex = null;
+      if (rawQuery) {
+        const escapedQuery = escapeHtml(rawQuery).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        queryRegex = new RegExp(`(${escapedQuery})`, 'gi');
+      }
+
       const filtered = presetKeys.filter((type) => {
         const cat = CATEGORY_MAP[type] || 'generic';
         if (activeCategory !== 'all' && cat !== activeCategory) return false;
@@ -532,13 +537,13 @@ SA.pageDialog = (() => {
 
         const nameEl = document.createElement('span');
         nameEl.className = 'motion-card-name';
-        nameEl.innerHTML = highlightMatch(name, query);
+        nameEl.innerHTML = highlightMatch(name, queryRegex);
         titleWrap.appendChild(nameEl);
 
         if (subName) {
           const subEl = document.createElement('span');
           subEl.className = 'motion-card-subname';
-          subEl.innerHTML = `(${highlightMatch(subName, query)})`;
+          subEl.innerHTML = `(${highlightMatch(subName, queryRegex)})`;
           titleWrap.appendChild(subEl);
         }
         info.appendChild(titleWrap);
