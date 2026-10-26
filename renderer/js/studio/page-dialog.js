@@ -470,6 +470,15 @@ SA.pageDialog = (() => {
       close();
     }
 
+    // Debounce to reduce redundant synchronous DOM rendering on each keystroke
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
     function renderGrid() {
       gridContainer.innerHTML = '';
       const query = searchInput.value.trim().toLowerCase();
@@ -589,7 +598,7 @@ SA.pageDialog = (() => {
       }
     }
 
-    searchInput.addEventListener('input', renderGrid);
+    searchInput.addEventListener('input', debounce(renderGrid, 150));
     renderGrid();
 
     // Footer actions
