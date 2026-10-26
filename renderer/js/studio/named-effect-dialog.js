@@ -204,6 +204,15 @@ SA.namedEffectDialog = (() => {
       renderList();
     }
 
+    // Debounce to reduce redundant synchronous DOM rendering on each keystroke
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
     function renderList() {
       listContainer.innerHTML = '';
       const query = searchInput.value.trim();
@@ -304,7 +313,7 @@ SA.namedEffectDialog = (() => {
       }
     }
 
-    searchInput.addEventListener('input', renderList);
+    searchInput.addEventListener('input', debounce(renderList, 150));
 
     renderList();
 

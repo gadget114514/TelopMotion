@@ -154,6 +154,15 @@ SA.motionDialog = (() => {
       return preset.categoryEn || preset.categoryJa || '';
     }
 
+    // Debounce to reduce redundant synchronous DOM rendering on each keystroke
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
     function renderList() {
       listContainer.innerHTML = '';
       const query = searchInput.value.trim().toLowerCase();
@@ -298,7 +307,7 @@ SA.motionDialog = (() => {
       }
     }
 
-    searchInput.addEventListener('input', renderList);
+    searchInput.addEventListener('input', debounce(renderList, 150));
 
     // Initial render
     renderList();
