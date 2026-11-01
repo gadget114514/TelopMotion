@@ -244,13 +244,27 @@ SA.lyricsEngine = (() => {
   // Clips of one track kind, hidden tracks excluded, in start order. `within`
   // (a Set of track ids) narrows them to one draw group.
   function activeClips(project, kind, within) {
-    const ids = new Set(
-      ((project && project.tracks) || [])
-        .filter((track) => track && track.kind === kind && !track.hidden && track.enabled !== false && (!within || within.has(track.id)))
-        .map((track) => track.id)
-    );
+    const tracks = (project && project.tracks) || [];
+    const ids = new Set();
+    for (let i = 0; i < tracks.length; i++) {
+      const track = tracks[i];
+      if (track && track.kind === kind && !track.hidden && track.enabled !== false && (!within || within.has(track.id))) {
+        ids.add(track.id);
+      }
+    }
+
     if (!ids.size) return [];
-    return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId) && !isClipDisabled(clip)).sort((a, b) => a.start - b.start);
+
+    const clips = (project && project.clips) || [];
+    const result = [];
+    for (let i = 0; i < clips.length; i++) {
+      const clip = clips[i];
+      if (clip && ids.has(clip.trackId) && !isClipDisabled(clip)) {
+        result.push(clip);
+      }
+    }
+
+    return result.sort((a, b) => a.start - b.start);
   }
 
   // A backdrop clip with per-beat segments: the segment under t lends its own
