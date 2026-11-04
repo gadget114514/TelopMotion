@@ -495,17 +495,12 @@ SA.lyricsEngine = (() => {
       const angle = ((state.rot || 0) * Math.PI) / 180;
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
-      const corners = [
-        [x0, y0],
-        [x1, y0],
-        [x1, y1],
-        [x0, y1],
+      return [
+        state.x + x0 * cos - y0 * sin, state.y + x0 * sin + y0 * cos,
+        state.x + x1 * cos - y0 * sin, state.y + x1 * sin + y0 * cos,
+        state.x + x1 * cos - y1 * sin, state.y + x1 * sin + y1 * cos,
+        state.x + x0 * cos - y1 * sin, state.y + x0 * sin + y1 * cos
       ];
-      const quad = [];
-      for (const [x, y] of corners) {
-        quad.push(state.x + x * cos - y * sin, state.y + x * sin + y * cos);
-      }
-      return quad;
     }
 
     function sceneDirection(project, beat) {
