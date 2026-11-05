@@ -373,15 +373,20 @@
       const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
       if (!wordRanks.has(wordKey)) wordRanks.set(wordKey, wordRanks.size);
     }
-    const unitsFor = (index, letter) => {
+    const unitsCache = new Array(N);
+    const wordCount = Math.max(1, wordRanks.size);
+    const lineCount = Math.max(1, lineRanks.size);
+    for (let index = 0; index < N; index += 1) {
+      const letter = letters[index];
       const lineKey = letter.lineIdx == null ? 0 : letter.lineIdx;
       const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
-      return {
+      unitsCache[index] = {
         letter: { rank: index, count: N },
-        word: { rank: wordRanks.get(wordKey) || 0, count: Math.max(1, wordRanks.size) },
-        line: { rank: lineRanks.get(lineKey) || 0, count: Math.max(1, lineRanks.size) },
+        word: { rank: wordRanks.get(wordKey) || 0, count: wordCount },
+        line: { rank: lineRanks.get(lineKey) || 0, count: lineCount },
       };
-    };
+    }
+    const unitsFor = (index) => unitsCache[index];
 
     const animation = groupInstance(style, 'animation');
     const layoutInstance = groupInstance(style, 'layout');
@@ -819,7 +824,7 @@
           shortSide,
           blockBBox,
           blockHalf,
-          units: unitsFor(index, letter),
+          units: unitsFor(index),
           scene,
           blockCenter: { x: anchorX, y: anchorY },
           letterX: state.x,
@@ -879,7 +884,7 @@
           shortSide,
           blockBBox,
           blockHalf,
-          units: unitsFor(index, letter),
+          units: unitsFor(index),
           scene,
           blockCenter: { x: anchorX, y: anchorY },
           letterX: state.x,
@@ -906,7 +911,7 @@
           shortSide,
           blockBBox,
           blockHalf,
-          units: unitsFor(index, letter),
+          units: unitsFor(index),
           scene,
           blockCenter: { x: anchorX, y: anchorY },
           letterX: state.x,
@@ -1122,7 +1127,7 @@
             shortSide,
             blockBBox,
             blockHalf,
-            units: unitsFor(first, letters[first]),
+            units: unitsFor(first),
             scene,
             blockCenter: { x: anchorX, y: anchorY },
             letterX: anchorX + run.center.x,
@@ -1190,7 +1195,7 @@
           shortSide,
           blockBBox,
           blockHalf,
-          units: unitsFor(index, letter),
+          units: unitsFor(index),
           scene,
           blockCenter: { x: anchorX, y: anchorY },
           letterX: state.x,

@@ -1,0 +1,3 @@
+## 2024-03-24 - [Avoid recomputing units for every letter and effect]
+**Learning:** `unitsFor` in `renderer/js/lyrics/motion.js` is called many times inside `evaluateBeat` in a per-frame hot path, recomputing line/word sets linearly inside map loops and allocating new objects each time. The original logic recalculates word and line sizes continuously for every single letter, every single frame.
+**Action:** Precalculate `unitsFor` results into a cache array at the start of `evaluateBeat` so it does a simple O(1) array lookup instead of computing ranks over and over again. Pre-computing it cuts down thousands of redundant object allocations.
