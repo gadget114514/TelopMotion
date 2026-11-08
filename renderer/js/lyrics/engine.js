@@ -1402,7 +1402,14 @@ SA.lyricsEngine = (() => {
     function evaluateBeatState(project, beat, scene, t, activeList, opts) {
       const seed = (project.styleMode && project.styleMode.seed) || 12345;
       const frameSize = { width: state.width, height: state.height };
-      const later = activeList.filter((entry) => entry.start > beat.start + 1e-4 && t <= entry.end + 1e-4).length;
+      // ⚡ Bolt: Avoid intermediate array allocation from .filter().length in per-frame hot path
+      let later = 0;
+      for (let i = 0; i < activeList.length; i++) {
+        const entry = activeList[i];
+        if (entry.start > beat.start + 1e-4 && t <= entry.end + 1e-4) {
+          later++;
+        }
+      }
       const stackOffset = later * (scene.size * ((scene.style.text && scene.style.text.lineHeight) || 1.2));
       const ctx = {
         project,
