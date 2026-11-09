@@ -364,24 +364,29 @@
     // Unit ranks for the selector-based effects: every letter carries its rank
     // among the letters / words / lines of the beat, so a range selector can
     // sweep the string without knowing the scene itself.
-    const wordRanks = new Map();
-    const lineRanks = new Map();
-    for (let index = 0; index < letters.length; index += 1) {
-      const letter = letters[index];
-      const lineKey = letter.lineIdx == null ? 0 : letter.lineIdx;
-      if (!lineRanks.has(lineKey)) lineRanks.set(lineKey, lineRanks.size);
-      const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
-      if (!wordRanks.has(wordKey)) wordRanks.set(wordKey, wordRanks.size);
+    if (!scene._unitRanks) {
+      const wordRanks = new Map();
+      const lineRanks = new Map();
+      for (let index = 0; index < letters.length; index += 1) {
+        const letter = letters[index];
+        const lineKey = letter.lineIdx == null ? 0 : letter.lineIdx;
+        if (!lineRanks.has(lineKey)) lineRanks.set(lineKey, lineRanks.size);
+        const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
+        if (!wordRanks.has(wordKey)) wordRanks.set(wordKey, wordRanks.size);
+      }
+      scene._unitRanks = new Array(letters.length);
+      for (let index = 0; index < letters.length; index += 1) {
+        const letter = letters[index];
+        const lineKey = letter.lineIdx == null ? 0 : letter.lineIdx;
+        const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
+        scene._unitRanks[index] = {
+          letter: { rank: index, count: N },
+          word: { rank: wordRanks.get(wordKey) || 0, count: Math.max(1, wordRanks.size) },
+          line: { rank: lineRanks.get(lineKey) || 0, count: Math.max(1, lineRanks.size) },
+        };
+      }
     }
-    const unitsFor = (index, letter) => {
-      const lineKey = letter.lineIdx == null ? 0 : letter.lineIdx;
-      const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
-      return {
-        letter: { rank: index, count: N },
-        word: { rank: wordRanks.get(wordKey) || 0, count: Math.max(1, wordRanks.size) },
-        line: { rank: lineRanks.get(lineKey) || 0, count: Math.max(1, lineRanks.size) },
-      };
-    };
+    const unitsFor = (index) => scene._unitRanks[index];
 
     const animation = groupInstance(style, 'animation');
     const layoutInstance = groupInstance(style, 'layout');
