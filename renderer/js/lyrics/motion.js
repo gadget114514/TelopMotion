@@ -73,7 +73,19 @@
     return fx.withDefaults(source, group);
   }
 
+  const motionDefCache = new WeakMap();
+
   function motionDef(instance, group, duration) {
+    if (instance) {
+      let cache = motionDefCache.get(instance);
+      if (!cache) {
+        cache = new Map();
+        motionDefCache.set(instance, cache);
+      }
+      const hit = cache.get(duration);
+      if (hit) return mergeDeep({}, hit);
+    }
+
     const entry = instance ? fx.get(group, instance.type) : null;
     const base = (entry && entry.defaults && entry.defaults.motion) || {};
     const merged = mergeDeep(fx.DEFAULT_MOTION, base, (instance && instance.motion) || {});
@@ -83,7 +95,12 @@
       merged[phase].delay = resolveDuration(merged[phase].delay, duration);
     }
     if (merged.loop && merged.loop.period != null) merged.loop.period = Math.max(0, resolveDuration(merged.loop.period, duration));
-    return merged;
+
+    if (instance) {
+      motionDefCache.get(instance).set(duration, merged);
+    }
+
+    return mergeDeep({}, merged);
   }
 
   // ADSR envelope (animation.motion.adsr): attack = enter, decay = the settle
