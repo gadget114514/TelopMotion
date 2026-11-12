@@ -321,7 +321,7 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('asset:read', (_event, payload) => {
+  ipcMain.handle('asset:read', async (_event, payload) => {
     try {
       const relative = String((payload && payload.path) || '').replace(/\\/g, '/');
       const normalized = path.posix.normalize(relative);
@@ -338,7 +338,8 @@ function registerIpc() {
       if (file !== base && !file.startsWith(`${base}${path.sep}`)) {
         throw Object.assign(new Error('blocked-asset'), { code: 'blocked-asset' });
       }
-      return ok(new Uint8Array(fs.readFileSync(file)));
+      const buffer = await fs.promises.readFile(file);
+      return ok(new Uint8Array(buffer));
     } catch (error) {
       return fail(error);
     }
